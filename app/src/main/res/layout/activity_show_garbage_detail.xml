@@ -1,8 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/garbage_detail_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".ShowGarbageDetailActivity">
+
+
+    <ImageView
+        android:id="@+id/picture_laji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:src="@mipmap/laji"
+
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        />
+
+    <RelativeLayout
+        android:id="@+id/detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/picture_laji"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/stroketext"
+        >
+
+        <TextView
+            android:id="@+id/text_garbage_name"
+            style="@style/garbage_detailtext"
+            android:text="垃圾名称："
+            />
+        <TextView
+            android:id="@+id/text_came_name"
+            style="@style/garbage_detailtext"
+            android:text="垃圾类型："
+            android:layout_below="@+id/text_garbage_name"
+            />
+        <TextView
+            android:id="@+id/text_city_name"
+            style="@style/garbage_detailtext"
+            android:text="城市："
+            android:layout_below="@+id/text_came_name"
+            />
+        <TextView
+            android:id="@+id/text_confidence"
+            style="@style/garbage_detailtext"
+            android:text="识别置信度："
+            android:layout_below="@+id/text_city_name"
+            />
+        <TextView
+            android:id="@+id/text_ps_detail"
+            style="@style/garbage_detailtext"
+            android:text="具体信息："
+            android:layout_below="@+id/text_confidence"
+            />
+
+
+        /*具体显示信息*/
+        <TextView
+            android:id="@+id/garbage_name"
+            style="@style/garbagedetail"
+            android:text="剩菜"
+            android:layout_toRightOf="@+id/text_garbage_name"
+            />
+
+        <TextView
+            android:id="@+id/came_name"
+            style="@style/garbagedetail"
+            android:text="湿垃圾"
+            android:layout_toRightOf="@+id/text_came_name"
+            android:layout_below="@+id/garbage_name"
+            />
+
+        <TextView
+            android:id="@+id/city_name"
+            style="@style/garbagedetail"
+            android:text="上海"
+            android:layout_toRightOf="@+id/text_city_name"
+            android:layout_below="@+id/came_name"
+            />
+
+        <TextView
+            android:id="@+id/confidence"
+            style="@style/garbagedetail"
+            android:text="1"
+            android:layout_toRightOf="@+id/text_confidence"
+            android:layout_below="@+id/city_name"
+            />
+
+        <TextView
+            android:id="@+id/ps_detail"
+            style="@style/garbagedetail"
+            android:text="湿垃圾应从生产时就与其他品种垃圾分开收集。投放前尽量沥干水分，有外包装的应去除外包装投放"
+            android:layout_below="@+id/text_ps_detail"
+            />
+
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/just_picture"
+        android:layout_below="@+id/detail_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@mipmap/bg"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        />
+
+    <TextView
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detail_layout"
+        android:id="@+id/text_ps"
+        android:text="注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果"
+        android:textStyle="bold"
+        />
 
 </RelativeLayout>

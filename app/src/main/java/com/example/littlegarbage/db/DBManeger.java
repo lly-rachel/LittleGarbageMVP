@@ -73,4 +73,11 @@ public class DBManeger {
     public static int deleteInfoByGarbage(String garbage){
         return database.delete("info","garbage=?",new String[]{garbage});
     }
+
+    /*根据城市名称替换信息内容*/
+    public static int updateInfoByGarbage(String garbage,String content){
+        ContentValues values = new ContentValues();
+        values.put("content",content);
+        return database.update("info",values,"garbage=?",new String[]{garbage});
+    }
 }
