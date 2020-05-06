@@ -7,6 +7,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -25,18 +27,25 @@ public class HttpUtil {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 
-    public static String sendOkHttpRequest(String garbage) {
+    public static String sendOkHttpRequest(String garbage) throws JSONException, MalformedURLException {
+
+        JSONObject json = new JSONObject();
+        json.put("cityId",String.valueOf(310000));
+        json.put("text",garbage);
+
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(400, TimeUnit.SECONDS)
-                .writeTimeout(400, TimeUnit.SECONDS)
-                .readTimeout(400, TimeUnit.SECONDS)
+                .connectTimeout(5000, TimeUnit.SECONDS)
+                .writeTimeout(5000, TimeUnit.SECONDS)
+                .readTimeout(5000, TimeUnit.SECONDS)
                 .build();
 
         String url1 = "https://aiapi.jd.com/jdai/garbageTextSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
         String s1 = GetMD5.md5("1a8c89772abf812630f6687255d22a3b" + time);
-        String url = url1 + time + "&sign=" + s1;
+        String urls = url1 + time + "&sign=" + s1;
+
+        URL url = new URL(urls);
 
 //        JSONObject json = new JSONObject();
 //
@@ -53,10 +62,12 @@ public class HttpUtil {
 
 //        RequestBody body = RequestBody.create(JSON, json);
 
-        RequestBody body = new FormBody.Builder()
-                .add("cityId",String.valueOf(310000))
-                .add("text",garbage)
-                .build();
+//        RequestBody body = new FormBody.Builder()
+//                .add("cityId",String.valueOf(310000))
+//                .add("text",garbage)
+//                .build();
+
+        RequestBody body = RequestBody.create(JSON, String.valueOf(json));
 
         Request request = new Request.Builder()
                 .url(url)

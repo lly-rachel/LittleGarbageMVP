@@ -36,7 +36,7 @@
         <TextView
             android:id="@+id/text_status"
             style="@style/garbage_detailtext"
-            android:text="获取数据失败"
+            android:text="获取数据中...."
             android:layout_centerHorizontal="true"
             />
 

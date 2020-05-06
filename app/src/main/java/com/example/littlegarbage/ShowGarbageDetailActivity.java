@@ -14,6 +14,7 @@ import com.example.littlegarbage.db.DBManeger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 public class ShowGarbageDetailActivity extends AppCompatActivity {
@@ -72,10 +73,16 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             JsonParser jp = new JsonParser();
 
             // 城市代码
-            String garbageString = HttpUtil.sendOkHttpRequest(garbage);
+            String garbageString = null;
+            try {
+                garbageString = HttpUtil.sendOkHttpRequest(garbage);
+            } catch (JSONException | MalformedURLException e) {
+                e.printStackTrace();
+            }
 
             if (garbageString == null) {
                 garbageString="数据获取错误";
+                statusTv.setText("获取数据成功");
 
             }else{
                 //获取数据成功
@@ -113,12 +120,10 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
 
                 List<GarbageBean.ResultBean.GarbageInfoBean> garbageInfoBean = finalGb.getResult().getGarbage_info();
 
-
-
                 garbagenameTv.setText(garbageInfoBean.get(0).getGarbage_name());
                 camenameTv.setText(garbageInfoBean.get(0).getCate_name());
                 citynameTv.setText(garbageInfoBean.get(0).getCity_name());
-                confidenceTv.setText((int) garbageInfoBean.get(0).getConfidence());
+                confidenceTv.setText(String.valueOf(garbageInfoBean.get(0).getConfidence()));
                 ps_detailTv.setText(garbageInfoBean.get(0).getPs());
                 statusTv.setText("获取数据成功");
             }
