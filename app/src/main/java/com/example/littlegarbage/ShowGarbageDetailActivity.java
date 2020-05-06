@@ -126,11 +126,37 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
                 confidenceTv.setText(String.valueOf(garbageInfoBean.get(0).getConfidence()));
                 ps_detailTv.setText(garbageInfoBean.get(0).getPs());
                 statusTv.setText("获取数据成功");
+
+                switch (garbageInfoBean.get(0).getCate_name()){
+
+
+                    case "湿垃圾":
+                        garbageIv.setImageResource(R.mipmap.shilaji);
+                        break;
+
+                    case "其他垃圾":
+                        garbageIv.setImageResource(R.mipmap.qitalaji);
+                        break;
+
+                    case "有害垃圾":
+                        garbageIv.setImageResource(R.mipmap.youhailaji);
+                        break;
+
+                    case "可回收物":
+                        garbageIv.setImageResource(R.mipmap.kehuishouwu);
+                        break;
+
+                    case "干垃圾":
+                        garbageIv.setImageResource(R.mipmap.ganlaji);
+                        break;
+
+                    default:  garbageIv.setImageResource(R.mipmap.laji);
+                }
             }
 
 
 
-            garbageIv.setImageResource(R.mipmap.laji);
+
             justpictureIv.setImageResource(R.mipmap.bg);
             justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
 
