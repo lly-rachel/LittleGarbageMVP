@@ -19,11 +19,11 @@ import java.util.List;
 public class ShowGarbageDetailActivity extends AppCompatActivity {
 
     ImageView garbageIv,justpictureIv;
-    TextView justpsTv;
+    TextView justpsTv,statusTv;
     TextView garbagenametext,camenametext,citynametext,confidencetext,ps_detailtext;
     TextView garbagenameTv,camenameTv,citynameTv,confidenceTv,ps_detailTv;
 
-    Handler hd=null;
+    Handler hd;
     String garbage;
 
     @Override
@@ -48,6 +48,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
         garbageIv=findViewById(R.id.picture_laji);
         justpictureIv = findViewById(R.id.just_picture);
         justpsTv= findViewById(R.id.text_ps);
+        statusTv=findViewById(R.id.text_status);
 
         garbagenametext=findViewById(R.id.text_garbage_name);
         camenametext=findViewById(R.id.text_came_name);
@@ -73,10 +74,25 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             // 城市代码
             String garbageString = HttpUtil.sendOkHttpRequest(garbage);
 
-            //获取数据成功
+            if (garbageString == null) {
+                garbageString="数据获取错误";
 
-            // 调用自定义的 JSON 解析类解析获取的 JSON 数据
-            garbageBean = jp.GarbageParse(garbageString);
+            }else{
+                //获取数据成功
+
+                // 调用自定义的 JSON 解析类解析获取的 JSON 数据
+                garbageBean = jp.GarbageParse(garbageString);
+                final GarbageBean finalGb = garbageBean;
+                // 多线程更新 UI
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        setDataText(finalGb);
+                    }
+                });
+
+            }
 
             //更新数据库信息
             int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
@@ -84,16 +100,6 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             if (i <= 0) {
                 DBManeger.addGarbageInfo(garbage,garbageString);
             }
-
-            final GarbageBean finalGb = garbageBean;
-            // 多线程更新 UI
-            hd.post(new Runnable() {
-                @Override
-                public void run() {
-
-                    setDataText(finalGb);
-                }
-            });
 
 
 
@@ -114,11 +120,15 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
                 citynameTv.setText(garbageInfoBean.get(0).getCity_name());
                 confidenceTv.setText((int) garbageInfoBean.get(0).getConfidence());
                 ps_detailTv.setText(garbageInfoBean.get(0).getPs());
+                statusTv.setText("获取数据成功");
             }
+
+
 
             garbageIv.setImageResource(R.mipmap.laji);
             justpictureIv.setImageResource(R.mipmap.bg);
             justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
+
 
             garbagenametext.setText("垃圾名称：");
             camenametext.setText("垃圾类型：");

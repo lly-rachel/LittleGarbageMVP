@@ -34,9 +34,17 @@
         >
 
         <TextView
+            android:id="@+id/text_status"
+            style="@style/garbage_detailtext"
+            android:text="获取数据失败"
+            android:layout_centerHorizontal="true"
+            />
+
+        <TextView
             android:id="@+id/text_garbage_name"
             style="@style/garbage_detailtext"
             android:text="垃圾名称："
+            android:layout_below="@+id/text_status"
             />
         <TextView
             android:id="@+id/text_came_name"
@@ -70,6 +78,7 @@
             style="@style/garbagedetail"
             android:text=""
             android:layout_toRightOf="@+id/text_garbage_name"
+            android:layout_below="@+id/text_status"
             />
 
         <TextView
