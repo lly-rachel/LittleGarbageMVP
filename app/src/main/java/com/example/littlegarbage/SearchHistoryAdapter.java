@@ -1,6 +1,7 @@
 package com.example.littlegarbage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,10 @@ import com.example.littlegarbage.db.DBManeger;
 
 import java.util.List;
 
-public class SearchHistoryAdapter extends BaseAdapter implements View.OnClickListener {
+public class SearchHistoryAdapter extends BaseAdapter {
 
     Context context;
     List<String> mDatas;
-
 
     public SearchHistoryAdapter(Context context, List<String> mDatas) {
         this.context = context;
@@ -43,7 +43,7 @@ public class SearchHistoryAdapter extends BaseAdapter implements View.OnClickLis
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        ViewHolder holder = null;
+        ViewHolder holder;
         if(convertView==null){
             convertView = LayoutInflater.from(context).inflate(R.layout.item_search_history,null);
             holder = new ViewHolder(convertView);
@@ -65,12 +65,7 @@ public class SearchHistoryAdapter extends BaseAdapter implements View.OnClickLis
         return convertView;
     }
 
-    @Override
-    public void onClick(View v) {
 
-
-
-    }
 
     class ViewHolder  {
 

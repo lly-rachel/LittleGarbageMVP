@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 
 import android.view.View;
 
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -49,8 +50,24 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_search);
 
         iniDetail();
+
+        historyLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
+                onListItemClick(index);
+            }
+        });
+
         iniEdt();
 
+    }
+
+    private void onListItemClick(int index) {
+
+        Intent intent=new Intent(this,ShowGarbageDetailActivity.class);
+        String garbage = (String) historyAdapter.getItem(index);
+        intent.putExtra("garbage",garbage);
+        this.startActivity(intent);
     }
 
     private void iniEdt() {
@@ -84,6 +101,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         soundIv = findViewById(R.id.search_sound);
         photoIv = findViewById(R.id.search_photo);
         historyLv = findViewById(R.id.search_history);
+        historyLv.setAdapter(historyAdapter);
+
 
         seachIv.setOnClickListener(this);
         soundIv.setOnClickListener(this);
@@ -94,25 +113,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
 
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);
-
-
-//        final String[] textView = {null};
-//
-//        historyAdapter.setOnItemClickListener(new SearchHistoryAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//
-//                textView[0] = (String) ((TextView) view).getText();
-//
-//            }
-//        });
-//        if(textView[0]!=null){
-//            Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
-//            intent.putExtra("garbage",textView[0]);
-//            startActivity(intent);
-//        }
-
         historyLv.setAdapter(historyAdapter);
+
+
 
     }
 

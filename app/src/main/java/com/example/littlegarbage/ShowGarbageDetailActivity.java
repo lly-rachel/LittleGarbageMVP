@@ -105,6 +105,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
             if (i <= 0) {
                 DBManeger.addGarbageInfo(garbage,garbageString);
+
             }
 
 
