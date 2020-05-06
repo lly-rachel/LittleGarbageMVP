@@ -129,7 +129,6 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
 
                 switch (garbageInfoBean.get(0).getCate_name()){
 
-
                     case "湿垃圾":
                         garbageIv.setImageResource(R.mipmap.shilaji);
                         break;
