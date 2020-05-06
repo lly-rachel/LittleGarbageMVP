@@ -4,15 +4,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.littlegarbage.db.DBManeger;
 
 import java.util.List;
 
-public class SearchHistoryAdapter extends BaseAdapter {
+public class SearchHistoryAdapter extends BaseAdapter implements View.OnClickListener {
 
     Context context;
     List<String> mDatas;
@@ -63,7 +65,14 @@ public class SearchHistoryAdapter extends BaseAdapter {
         return convertView;
     }
 
-    class ViewHolder{
+    @Override
+    public void onClick(View v) {
+
+
+
+    }
+
+    class ViewHolder  {
 
         ImageView deleteIv;
         TextView garbagenameTv;
@@ -72,6 +81,9 @@ public class SearchHistoryAdapter extends BaseAdapter {
 
             deleteIv=itemView.findViewById(R.id.search_history_delete);
             garbagenameTv=itemView.findViewById(R.id.search_history_name);
+
+
+
 
         }
     }

@@ -82,7 +82,6 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
 
             if (garbageString == null) {
                 garbageString="数据获取错误";
-                statusTv.setText("获取数据成功");
 
             }else{
                 //获取数据成功

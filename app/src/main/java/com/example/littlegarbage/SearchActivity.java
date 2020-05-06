@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
@@ -91,14 +92,28 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         garbagenameList = DBManeger.queryAllGarbageName();
 
-        /*测试数据*/
-        if(garbagenameList.size()==0){
-         garbagenameList.add("剩菜");
-        }
-
 
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);
+
+
+//        final String[] textView = {null};
+//
+//        historyAdapter.setOnItemClickListener(new SearchHistoryAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(View view, int position) {
+//
+//                textView[0] = (String) ((TextView) view).getText();
+//
+//            }
+//        });
+//        if(textView[0]!=null){
+//            Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
+//            intent.putExtra("garbage",textView[0]);
+//            startActivity(intent);
+//        }
+
         historyLv.setAdapter(historyAdapter);
+
     }
 
     @Override
@@ -117,7 +132,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     startActivity(intent);
 
                 }else{
-                    Toast.makeText(this,"输入垃圾不能为空",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"输入信息不能为空",Toast.LENGTH_LONG).show();
                 }
 
                 break;

@@ -35,9 +35,9 @@ public class HttpUtil {
 
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(5000, TimeUnit.SECONDS)
-                .writeTimeout(5000, TimeUnit.SECONDS)
-                .readTimeout(5000, TimeUnit.SECONDS)
+                .connectTimeout(7000, TimeUnit.SECONDS)
+                .writeTimeout(7000, TimeUnit.SECONDS)
+                .readTimeout(7000, TimeUnit.SECONDS)
                 .build();
 
         String url1 = "https://aiapi.jd.com/jdai/garbageTextSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
@@ -80,7 +80,6 @@ public class HttpUtil {
             response = okHttpClient.newCall(request).execute();
             if (response.code()==200) {
                 String message=response.body().string();
-
                 return message;
             } else {
 
