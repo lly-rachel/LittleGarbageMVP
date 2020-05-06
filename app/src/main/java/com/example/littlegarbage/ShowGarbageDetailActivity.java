@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class ShowGarbageDetailActivity extends AppCompatActivity {
 
@@ -69,43 +72,49 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
 
             // 城市代码
             String garbageString = HttpUtil.sendOkHttpRequest(garbage);
-            JSONObject joGarbage = null;
-            try {
-                joGarbage = new JSONObject(garbageString);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+            //获取数据成功
+
+            // 调用自定义的 JSON 解析类解析获取的 JSON 数据
+            garbageBean = jp.GarbageParse(garbageString);
+
+            //更新数据库信息
+            int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
+            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+            if (i <= 0) {
+                DBManeger.addGarbageInfo(garbage,garbageString);
             }
 
-            try {
-                if (joGarbage.getString("code").equals("10000")) {
-                    // 调用自定义的 JSON 解析类解析获取的 JSON 数据
-                    garbageBean = jp.GarbageParse(garbageString);
+            final GarbageBean finalGb = garbageBean;
+            // 多线程更新 UI
+            hd.post(new Runnable() {
+                @Override
+                public void run() {
 
-                    //更新数据库信息
-                    int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
-                    //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-                    if (i <= 0) {
-                        DBManeger.addGarbageInfo(garbage,garbageString);
-                    }
-
-                    final GarbageBean finalGb = garbageBean;
-                    // 多线程更新 UI
-                    hd.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            setDataText(finalGb);
-                        }
-                    });
+                    setDataText(finalGb);
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            });
+
+
+
+
 
         }
 
         private void setDataText(GarbageBean finalGb) {
+
+            if(finalGb!=null){
+
+                List<GarbageBean.ResultBean.GarbageInfoBean> garbageInfoBean = finalGb.getResult().getGarbage_info();
+
+
+
+                garbagenameTv.setText(garbageInfoBean.get(0).getGarbage_name());
+                camenameTv.setText(garbageInfoBean.get(0).getCate_name());
+                citynameTv.setText(garbageInfoBean.get(0).getCity_name());
+                confidenceTv.setText((int) garbageInfoBean.get(0).getConfidence());
+                ps_detailTv.setText(garbageInfoBean.get(0).getPs());
+            }
 
             garbageIv.setImageResource(R.mipmap.laji);
             justpictureIv.setImageResource(R.mipmap.bg);
@@ -117,13 +126,6 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             confidencetext.setText("识别置信度：");
             ps_detailtext.setText("具体信息：");
 
-            GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean = finalGb.getResult().getGarbage_info();
-
-            garbagenameTv.setText(garbageInfoBean.getGarbage_name());
-            camenameTv.setText(garbageInfoBean.getCate_name());
-            citynameTv.setText(garbageInfoBean.getCity_name());
-            confidenceTv.setText((int) garbageInfoBean.getConfidence());
-            ps_detailTv.setText(garbageInfoBean.getPs());
 
         }
     }

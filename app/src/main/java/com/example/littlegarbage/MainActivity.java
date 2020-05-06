@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.littlegarbage.db.DBManeger;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button search;
@@ -15,6 +17,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DBManeger.initDB(this);
 
         search=findViewById(R.id.main_search);
         search.setOnClickListener(this);

@@ -88,13 +88,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         soundIv.setOnClickListener(this);
         photoIv.setOnClickListener(this);
 
-        garbagenameList= new ArrayList<>();
-//        garbagenameList = DBManeger.queryAllGarbageName();
-//
-//        /*测试数据*/
-//        if(garbagenameList.size()==0){
-//         garbagenameList.add("西瓜皮");
-//        }
+
+        garbagenameList = DBManeger.queryAllGarbageName();
+
+        /*测试数据*/
+        if(garbagenameList.size()==0){
+         garbagenameList.add("剩菜");
+        }
 
 
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);

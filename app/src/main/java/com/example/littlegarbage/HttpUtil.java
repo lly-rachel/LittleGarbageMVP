@@ -31,8 +31,12 @@ public class HttpUtil {
         String responseData = null;
 
         try {
+
             Response response =client.newCall(request).execute();
-            responseData = response.body().string();
+            if(response.code()==200){
+                responseData = response.body().string();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

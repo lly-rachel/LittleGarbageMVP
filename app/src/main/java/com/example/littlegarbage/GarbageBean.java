@@ -21,6 +21,14 @@ public class GarbageBean {
     private String msg;
     private ResultBean result;
 
+    public GarbageBean(String code, boolean charge, int remain, String msg, ResultBean result) {
+        this.code = code;
+        this.charge = charge;
+        this.remain = remain;
+        this.msg = msg;
+        this.result = result;
+    }
+
     public String getCode() {
         return code;
     }
@@ -61,22 +69,11 @@ public class GarbageBean {
         this.result = result;
     }
 
-    /*将result解析所需要的信息*/
-    public void setResult(String result) {
 
-        try {
-            JSONObject joGarbage = new JSONObject(result);
-            ResultBean resultBean =null;
-            resultBean.setStatus(joGarbage.getInt("status"));
-            resultBean.setMessage(joGarbage.getString("message"));
-            resultBean.setGarbage_info(joGarbage.getString("message"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public static class ResultBean {
+
+
         /**
          * garbage_info : [{"cate_name":"湿垃圾","city_id":"310000","city_name":"上海市","confidence":0.780099213,"garbage_name":"坚果炒货","ps":"投放建议：容器与外包装为可回收物"}]
          * message : success
@@ -85,7 +82,13 @@ public class GarbageBean {
 
         public String message;
         public int status;
-        public GarbageInfoBean garbage_info;
+        public List<GarbageInfoBean> garbage_info;
+
+        public ResultBean(String message, int status, List<GarbageInfoBean> garbage_info) {
+            this.message = message;
+            this.status = status;
+            this.garbage_info = garbage_info;
+        }
 
         public String getMessage() {
             return message;
@@ -103,30 +106,15 @@ public class GarbageBean {
             this.status = status;
         }
 
-        public GarbageInfoBean getGarbage_info() {
+        public List<GarbageInfoBean> getGarbage_info() {
             return garbage_info;
         }
 
-        public void setGarbage_info(GarbageInfoBean garbage_info) {
+        public void setGarbage_info(List<GarbageInfoBean> garbage_info) {
             this.garbage_info = garbage_info;
         }
 
-        /*将message解析所需要的信息*/
-        public void setGarbage_info(String message) {
 
-            try {
-                JSONObject joGarbage = new JSONObject(message);
-                GarbageInfoBean garbageInfoBean = null;
-                garbageInfoBean.setCate_name(joGarbage.getString("cate_name"));
-                garbageInfoBean.setCity_id(joGarbage.getString("city_id"));
-                garbageInfoBean.setCity_name(joGarbage.getString("city_name"));
-                garbageInfoBean.setConfidence(joGarbage.getInt("confidence"));
-                garbageInfoBean.setPs(joGarbage.getString("ps"));
-                garbageInfoBean.setGarbage_name(joGarbage.getString("garbage_name"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
         public static class GarbageInfoBean {
             /**
@@ -144,6 +132,15 @@ public class GarbageBean {
             private double confidence;
             private String garbage_name;
             private String ps;
+
+            public GarbageInfoBean(String cate_name, String city_id, String city_name, double confidence, String garbage_name, String ps) {
+                this.cate_name = cate_name;
+                this.city_id = city_id;
+                this.city_name = city_name;
+                this.confidence = confidence;
+                this.garbage_name = garbage_name;
+                this.ps = ps;
+            }
 
             public String getCate_name() {
                 return cate_name;
