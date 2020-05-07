@@ -13,6 +13,7 @@ import android.view.View;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -26,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
@@ -35,7 +37,8 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText seachnameET;
+    AutoCompleteTextView seachnameATV;
+
 
     GridView hot_historyGv;
     private ArrayAdapter<String> arrayAdapter;
@@ -46,6 +49,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     String garbage;
     SearchHistoryAdapter historyAdapter;
     List<String> garbagenameList;
+
+    final static String hotSearchHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
+    final static String imageNameURL = "https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477";
 
     final static List<String> newdata= new ArrayList<>();
 
@@ -85,9 +91,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void run() {
             super.run();
-
             try {
-                String data =GetHotSearchHistory.GetHotData();
+                String data = GetHttpData.GetHotData(hotSearchHistoryURL);
                 final String finalWi = data;
                 // 多线程更新 UI
                 hd.post(new Runnable() {
@@ -161,11 +166,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
 
 
-    private void iniEdt() {
-        seachnameET = findViewById(R.id.garbage_search_editview);
+    public  void iniEdt() {
+
+        seachnameATV = findViewById(R.id.garbage_search_autoCompelete);
+        seachnameATV.setThreshold(1);
+
+
 
         /*获取输入框监听  联想词可操作*/
-        seachnameET.addTextChangedListener(new TextWatcher() {
+        seachnameATV.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -173,6 +182,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+//                if(s!=null){
+//                    try {
+//                        GetImageData(s);
+//                    } catch (UnsupportedEncodingException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
             }
 
@@ -182,9 +199,57 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+
     }
 
+    private void GetImageData(CharSequence s) throws UnsupportedEncodingException {
 
+        String s1 = java.net.URLEncoder.encode((String) s,"UTF-8");
+
+        String IMAGEURL = imageNameURL+"&content="+s1;
+//        try {
+//            final String message = GetHttpData.GetHotData(IMAGEURL);
+//
+//            hd.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                  setImageData(message);
+//                }
+//            });
+//
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+    }
+
+//    private void setImageData(String finals) {
+//
+//        List<String> ImageNameList = new ArrayList<>();
+//        if(finals!=null){
+//            JSONObject joname = null;
+//            try {
+//                joname = new JSONObject(finals);
+//
+//                JSONArray listArray = joname.getJSONArray("result");
+//                for(int i = 0;i<listArray.length();i++){
+//                    String name = listArray.getString(0);
+//                    ImageNameList.add(name);
+//                }
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//            ArrayAdapter<String> atvArrayAdapter = new ArrayAdapter<>(this,
+//                    android.R.layout.simple_dropdown_item_1line,ImageNameList);
+//            seachnameATV.setAdapter(atvArrayAdapter);
+//
+//        }
+//
+//    }
 
     private void iniDetail()  {
 
@@ -207,8 +272,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         historyLv.setAdapter(historyAdapter);
 
 
-
-
     }
 
 
@@ -221,7 +284,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.garbage_search:
 
-                garbage = seachnameET.getText().toString();
+                garbage = seachnameATV.getText().toString();
 
                 if(!TextUtils.isEmpty(garbage)){
 
@@ -242,5 +305,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
+
 
 }

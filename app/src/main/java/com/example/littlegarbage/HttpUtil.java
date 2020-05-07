@@ -1,26 +1,24 @@
 package com.example.littlegarbage;
 
-import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.content.ContentValues.TAG;
+
 
 public class HttpUtil {
 
@@ -46,26 +44,6 @@ public class HttpUtil {
         String urls = url1 + time + "&sign=" + s1;
 
         URL url = new URL(urls);
-
-//        JSONObject json = new JSONObject();
-//
-//        try {
-//            json.put("cityId","310000");
-//            json.put("text",garbage);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-//        RequestBody body = FormBody.create(JSON, String.valueOf(json));
-
-//        String json = "{ "+"cityId"+":"+310000+","+"text:"+garbage+"}";
-
-//        RequestBody body = RequestBody.create(JSON, json);
-
-//        RequestBody body = new FormBody.Builder()
-//                .add("cityId",String.valueOf(310000))
-//                .add("text",garbage)
-//                .build();
 
         RequestBody body = RequestBody.create(JSON, String.valueOf(json));
 

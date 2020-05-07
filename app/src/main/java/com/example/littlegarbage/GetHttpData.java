@@ -20,13 +20,13 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class GetHotSearchHistory {
+public class GetHttpData {
 
 
 
-    public static String GetHotData() throws MalformedURLException, JSONException {
+    public static String GetHotData(String s) throws MalformedURLException, JSONException {
 
-        String s = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
+
 
         String res = "";
 
