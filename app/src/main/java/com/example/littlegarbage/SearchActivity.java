@@ -18,13 +18,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -38,6 +34,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     GridView hot_historyGv;
     private ArrayAdapter<String> arrayAdapter;
+    List<String> list = new ArrayList<>();
 
     ImageView seachIv,soundIv,photoIv;
     ListView historyLv;
@@ -120,7 +117,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         historyLv.setAdapter(historyAdapter);
 
         hot_historyGv=findViewById(R.id.hot_history_Gridview);
-        arrayAdapter=new ArrayAdapter<>(this,R.layout.item_hot_searchhistory)
+
+        arrayAdapter = new ArrayAdapter<>(this,R.layout.)
+
 
     }
 
