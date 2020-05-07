@@ -150,6 +150,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    /*根据传进garbage到展示界面*/
     private void getTheGarbageMessage(String garbage) {
 
         Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
