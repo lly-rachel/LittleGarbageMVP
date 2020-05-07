@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/hot_bg"
     android:text="纸张"
+    android:textStyle="bold"
     android:gravity="center"
     android:padding="5dp"
     >

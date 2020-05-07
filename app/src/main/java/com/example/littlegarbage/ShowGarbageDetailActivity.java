@@ -145,6 +145,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
                 confidenceTv.setText(String.valueOf(garbageInfoBean.get(0).getConfidence()));
                 ps_detailTv.setText(garbageInfoBean.get(0).getPs());
                 statusTv.setText("获取数据成功");
+                justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
 
                 switch (garbageInfoBean.get(0).getCate_name()){
 
@@ -176,7 +177,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
 
             justpictureIv.setImageResource(R.mipmap.bg);
-            justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
+
 
 
             garbagenametext.setText("垃圾名称：");

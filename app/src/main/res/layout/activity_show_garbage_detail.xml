@@ -125,9 +125,9 @@
 
     <ImageView
         android:id="@+id/just_picture"
-        android:layout_below="@+id/detail_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_ps"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:src="@mipmap/bg"
         android:layout_centerHorizontal="true"
@@ -142,7 +142,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/detail_layout"
         android:id="@+id/text_ps"
-        android:text="注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果"
+        android:text="注意：数据获取时间超过10s视为获取数据失败"
         android:textStyle="bold"
         />
 

@@ -59,16 +59,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         hot_historyGv=findViewById(R.id.hot_history_Gridview);
 
 
-        hd = new Handler();
+       hd = new Handler();
 
-//        // 启用网络线程
-//        HttpThreadToGetData ht = new HttpThreadToGetData();
-//        ht.start();
+        // 启用网络线程
+        HttpThreadToGetData ht = new HttpThreadToGetData();
+        ht.start();
+
 
         historyLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
-                onListItemClick(index);
+                String garbage = (String) historyAdapter.getItem(index);
+                getTheGarbageMessage(garbage);
             }
         });
 
@@ -78,31 +80,31 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-//    public class HttpThreadToGetData extends Thread{
-//
-//        @Override
-//        public void run() {
-//            super.run();
-//
-//            try {
-////                String data =GetHotSearchHistory.GetHotData();
-////                final String finalWi = data;
-////                // 多线程更新 UI
-////                hd.post(new Runnable() {
-////                    @Override
-////                    public void run() {
-////
-////                        setData(finalWi);
-////                    }
-////                });
-//
-//
-//            } catch (MalformedURLException | JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    public class HttpThreadToGetData extends Thread{
 
+        @Override
+        public void run() {
+            super.run();
+
+            try {
+                String data =GetHotSearchHistory.GetHotData();
+                final String finalWi = data;
+                // 多线程更新 UI
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setData(finalWi);
+                    }
+                });
+
+
+            } catch (MalformedURLException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*解析获取的垃圾分类最多搜索记录的json数据*/
     public void setData(String data)  {
 
         if(data!=null){
@@ -116,7 +118,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         String name =jsonArray.getString("name");
                         Integer type = jsonArray.getInt("type");
                         Integer index = jsonArray.getInt("index");
-                        if(index>1000){
+                        if(index>100&&name.length()<5&&newdata.size()<16){
                             newdata.add(name);
                         }
                     }
@@ -132,16 +134,31 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         arrayAdapter = new ArrayAdapter<>(this,R.layout.item_hotgarbage,newdata);
         hot_historyGv.setAdapter(arrayAdapter);
+        setListener();
     }
 
+    private void setListener() {
 
-    private void onListItemClick(int index) {
+        hot_historyGv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                garbage = newdata.get(position);
+                getTheGarbageMessage(garbage);
+            }
+        });
 
-        Intent intent=new Intent(this,ShowGarbageDetailActivity.class);
-        String garbage = (String) historyAdapter.getItem(index);
+
+    }
+
+    private void getTheGarbageMessage(String garbage) {
+
+        Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
         intent.putExtra("garbage",garbage);
-        this.startActivity(intent);
+        startActivity(intent);
+
     }
+
+
 
     private void iniEdt() {
         seachnameET = findViewById(R.id.garbage_search_editview);
@@ -207,9 +224,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
                 if(!TextUtils.isEmpty(garbage)){
 
-                    Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
-                    intent.putExtra("garbage",garbage);
-                    startActivity(intent);
+                    getTheGarbageMessage(garbage);
 
                 }else{
                     Toast.makeText(this,"输入信息不能为空",Toast.LENGTH_LONG).show();

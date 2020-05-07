@@ -91,7 +91,9 @@
             android:layout_below="@+id/hot_history_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:numColumns="5"
+            android:numColumns="4"
+            android:horizontalSpacing="5dp"
+            android:verticalSpacing="3dp"
             ></GridView>
     </RelativeLayout>
 
