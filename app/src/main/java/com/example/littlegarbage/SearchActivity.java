@@ -12,7 +12,9 @@ import android.text.TextWatcher;
 import android.view.View;
 
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import android.widget.ListView;
@@ -34,6 +36,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     EditText seachnameET;
 
+    GridView hot_historyGv;
+    private ArrayAdapter<String> arrayAdapter;
 
     ImageView seachIv,soundIv,photoIv;
     ListView historyLv;
@@ -115,8 +119,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);
         historyLv.setAdapter(historyAdapter);
 
-
-
+        hot_historyGv=findViewById(R.id.hot_history_Gridview);
+        arrayAdapter=new ArrayAdapter<>(this,R.layout.);
     }
 
     @Override

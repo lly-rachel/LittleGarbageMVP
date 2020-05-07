@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,9 +18,9 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.util.List;
 
-public class ShowGarbageDetailActivity extends AppCompatActivity {
+public class ShowGarbageDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
-    ImageView garbageIv,justpictureIv;
+    ImageView garbageIv,justpictureIv,sureIv;
     TextView justpsTv,statusTv;
     TextView garbagenametext,camenametext,citynametext,confidencetext,ps_detailtext;
     TextView garbagenameTv,camenameTv,citynameTv,confidenceTv,ps_detailTv;
@@ -51,6 +52,9 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
         justpsTv= findViewById(R.id.text_ps);
         statusTv=findViewById(R.id.text_status);
 
+        sureIv = findViewById(R.id.detail_sure);
+        sureIv.setOnClickListener(this);
+
         garbagenametext=findViewById(R.id.text_garbage_name);
         camenametext=findViewById(R.id.text_came_name);
         citynametext=findViewById(R.id.text_city_name);
@@ -62,6 +66,21 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
         citynameTv=findViewById(R.id.city_name);
         confidenceTv=findViewById(R.id.confidence);
         ps_detailTv=findViewById(R.id.ps_detail);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = null;
+        switch (v.getId()){
+
+
+            case R.id.detail_sure :
+                intent = new Intent(this,SearchActivity.class);
+
+                break;
+        }
+
+        startActivity(intent);
     }
 
     public class HttpThread extends Thread {
