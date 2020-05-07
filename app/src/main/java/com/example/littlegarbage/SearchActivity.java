@@ -22,6 +22,11 @@ import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -34,7 +39,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     GridView hot_historyGv;
     private ArrayAdapter<String> arrayAdapter;
-    List<String> list = new ArrayList<>();
+    Handler hd;
 
     ImageView seachIv,soundIv,photoIv;
     ListView historyLv;
@@ -42,8 +47,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     SearchHistoryAdapter historyAdapter;
     List<String> garbagenameList;
 
-
-
+    final static List<String> newdata= new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         iniDetail();
 
+        hot_historyGv=findViewById(R.id.hot_history_Gridview);
+
+
+        hd = new Handler();
+
+//        // 启用网络线程
+//        HttpThreadToGetData ht = new HttpThreadToGetData();
+//        ht.start();
+
         historyLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
@@ -59,9 +72,68 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+
         iniEdt();
 
     }
+
+
+//    public class HttpThreadToGetData extends Thread{
+//
+//        @Override
+//        public void run() {
+//            super.run();
+//
+//            try {
+////                String data =GetHotSearchHistory.GetHotData();
+////                final String finalWi = data;
+////                // 多线程更新 UI
+////                hd.post(new Runnable() {
+////                    @Override
+////                    public void run() {
+////
+////                        setData(finalWi);
+////                    }
+////                });
+//
+//
+//            } catch (MalformedURLException | JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+    public void setData(String data)  {
+
+        if(data!=null){
+            JSONObject joname = null;
+            try {
+                joname = new JSONObject(data);
+                if(joname.getInt("code")==200){
+                    JSONArray listArray = joname.getJSONArray("newslist");
+                    for(int i = 0;i<listArray.length();i++){
+                        JSONObject  jsonArray= listArray.getJSONObject(i);
+                        String name =jsonArray.getString("name");
+                        Integer type = jsonArray.getInt("type");
+                        Integer index = jsonArray.getInt("index");
+                        if(index>1000){
+                            newdata.add(name);
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+
+        arrayAdapter = new ArrayAdapter<>(this,R.layout.item_hotgarbage,newdata);
+        hot_historyGv.setAdapter(arrayAdapter);
+    }
+
 
     private void onListItemClick(int index) {
 
@@ -96,7 +168,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
 
 
-    private void iniDetail() {
+    private void iniDetail()  {
 
         seachIv = findViewById(R.id.garbage_search);
         soundIv = findViewById(R.id.search_sound);
@@ -116,12 +188,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);
         historyLv.setAdapter(historyAdapter);
 
-        hot_historyGv=findViewById(R.id.hot_history_Gridview);
 
-        arrayAdapter = new ArrayAdapter<>(this,R.layout.)
 
 
     }
+
+
+
 
     @Override
     public void onClick(View v) {
@@ -153,7 +226,5 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
-
-
 
 }
