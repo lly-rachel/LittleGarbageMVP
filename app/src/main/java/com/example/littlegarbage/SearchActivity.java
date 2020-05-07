@@ -120,7 +120,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         historyLv.setAdapter(historyAdapter);
 
         hot_historyGv=findViewById(R.id.hot_history_Gridview);
-        List<String>
+        arrayAdapter=new ArrayAdapter<>(this,R.layout.item_hot_searchhistory)
 
     }
 
