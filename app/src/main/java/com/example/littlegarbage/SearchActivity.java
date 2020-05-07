@@ -202,6 +202,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    /*联想词api 增加Thread*/
     private void GetImageData(CharSequence s) throws UnsupportedEncodingException {
 
         String s1 = java.net.URLEncoder.encode((String) s,"UTF-8");
