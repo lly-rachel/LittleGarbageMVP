@@ -173,6 +173,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public  void iniEdt() {
 
         seachnameATV = findViewById(R.id.garbage_search_autoCompelete);
+        seachnameATV.setThreshold(1);
 
 
         /*获取输入框监听  联想词可操作*/
@@ -185,19 +186,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-//                String name = String.valueOf(s);
-//                try {
-//                    Imagename = java.net.URLEncoder.encode(name,"UTF-8");
-//                    GetImageData(Imagename);
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
-                String name = String.valueOf(s);
+                String name=seachnameATV.getText().toString();
+         //       String name = String.valueOf(s);
                 try {
                     Imagename = java.net.URLEncoder.encode(name,"UTF-8");
                     GetImageData(Imagename);
@@ -206,9 +201,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
 
-                
+
             }
-            
+
         });
 
 
@@ -271,7 +266,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             ArrayAdapter<String> atvArrayAdapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,ImageNameList);
+
             seachnameATV.setAdapter(atvArrayAdapter);
+            atvArrayAdapter.notifyDataSetChanged();
 
         }
 
