@@ -19,6 +19,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
@@ -45,6 +46,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     Handler hd;
     String Imagename;
     String imageUrl;
+    String input;
 
     ImageView seachIv,soundIv,photoIv;
     ListView historyLv;
@@ -171,8 +173,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public  void iniEdt() {
 
         seachnameATV = findViewById(R.id.garbage_search_autoCompelete);
-        seachnameATV.setThreshold(1);
-
 
 
         /*获取输入框监听  联想词可操作*/
@@ -184,8 +184,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                
 
+//                String name = String.valueOf(s);
+//                try {
+//                    Imagename = java.net.URLEncoder.encode(name,"UTF-8");
+//                    GetImageData(Imagename);
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
             }
 
             @Override
@@ -208,14 +214,17 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    /*根据输入的文本 传入content参数*/
     private void GetImageData(String name) {
 
         imageUrl  = imageNameURL+"&content="+name;
+        //网络请求
         HttpThreadToGetImageData httpThreadToGetImageData = new HttpThreadToGetImageData();
         httpThreadToGetImageData.start();
 
     }
 
+    /*获取联想词数据*/
     public class HttpThreadToGetImageData extends Thread{
 
         @Override
@@ -240,7 +249,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-
+    /*解析联想词数据*/
     private void setImageData(String finals) {
 
         List<String> ImageNameList = new ArrayList<>();
