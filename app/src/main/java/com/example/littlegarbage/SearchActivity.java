@@ -43,6 +43,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     GridView hot_historyGv;
     private ArrayAdapter<String> arrayAdapter;
     Handler hd;
+    String Imagename;
+    String imageUrl;
 
     ImageView seachIv,soundIv,photoIv;
     ListView historyLv;
@@ -182,75 +184,89 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-//                if(s!=null){
-//                    try {
-//                        GetImageData(s);
-//                    } catch (UnsupportedEncodingException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+                
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+                String name = String.valueOf(s);
+                try {
+                    Imagename = java.net.URLEncoder.encode(name,"UTF-8");
+                    GetImageData(Imagename);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+
+                
             }
+            
         });
 
 
     }
 
-    /*联想词api 增加Thread*/
-    private void GetImageData(CharSequence s) throws UnsupportedEncodingException {
+    private void GetImageData(String name) {
 
-        String s1 = java.net.URLEncoder.encode((String) s,"UTF-8");
-
-        String IMAGEURL = imageNameURL+"&content="+s1;
-//        try {
-//            final String message = GetHttpData.GetHotData(IMAGEURL);
-//
-//            hd.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                  setImageData(message);
-//                }
-//            });
-//
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+        imageUrl  = imageNameURL+"&content="+name;
+        HttpThreadToGetImageData httpThreadToGetImageData = new HttpThreadToGetImageData();
+        httpThreadToGetImageData.start();
 
     }
 
-//    private void setImageData(String finals) {
-//
-//        List<String> ImageNameList = new ArrayList<>();
-//        if(finals!=null){
-//            JSONObject joname = null;
-//            try {
-//                joname = new JSONObject(finals);
-//
-//                JSONArray listArray = joname.getJSONArray("result");
-//                for(int i = 0;i<listArray.length();i++){
-//                    String name = listArray.getString(0);
-//                    ImageNameList.add(name);
-//                }
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//            ArrayAdapter<String> atvArrayAdapter = new ArrayAdapter<>(this,
-//                    android.R.layout.simple_dropdown_item_1line,ImageNameList);
-//            seachnameATV.setAdapter(atvArrayAdapter);
-//
-//        }
-//
-//    }
+    public class HttpThreadToGetImageData extends Thread{
+
+        @Override
+        public void run() {
+            super.run();
+            try {
+                String imageData = GetHttpData.GetHotData(imageUrl);
+                final String finalImageData =imageData;
+                // 多线程更新 UI
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setImageData(finalImageData);
+                    }
+                });
+
+
+            } catch (MalformedURLException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    private void setImageData(String finals) {
+
+        List<String> ImageNameList = new ArrayList<>();
+        if(finals!=null){
+            JSONObject joname = null;
+            try {
+                joname = new JSONObject(finals);
+
+                JSONArray listArray = joname.getJSONArray("result");
+                for(int i = 0;i<listArray.length();i++){
+                    JSONArray NameArray = listArray.getJSONArray(i);
+                    String name = NameArray.getString(0);
+                    ImageNameList.add(name);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            ArrayAdapter<String> atvArrayAdapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_dropdown_item_1line,ImageNameList);
+            seachnameATV.setAdapter(atvArrayAdapter);
+
+        }
+
+    }
 
     private void iniDetail()  {
 
