@@ -1,14 +1,22 @@
 package com.example.littlegarbage;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 
+import android.util.Base64;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -28,6 +36,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -40,15 +52,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     AutoCompleteTextView seachnameATV;
 
-
+    /*显示联想词*/
     GridView hot_historyGv;
     private ArrayAdapter<String> arrayAdapter;
     Handler hd;
     String Imagename;
     String imageUrl;
-    String input;
 
-    ImageView seachIv,soundIv,photoIv;
+    /*拍照用*/
+    public static final int TAKE_PHOTO = 1;
+    private Uri imageUri;
+
+    ImageView seachIv,soundIv,photoIv,takepictureIv;
     ListView historyLv;
     String garbage;
     SearchHistoryAdapter historyAdapter;
@@ -127,7 +142,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         String name =jsonArray.getString("name");
                         Integer type = jsonArray.getInt("type");
                         Integer index = jsonArray.getInt("index");
-                        if(index>100&&name.length()<5&&newdata.size()<16){
+                        if(index>100&&name.length()<5&&newdata.size()<16&&!newdata.contains(name)){
                             newdata.add(name);
                         }
                     }
@@ -279,6 +294,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         seachIv = findViewById(R.id.garbage_search);
         soundIv = findViewById(R.id.search_sound);
         photoIv = findViewById(R.id.search_photo);
+        takepictureIv = findViewById(R.id.search_takepicture);
         historyLv = findViewById(R.id.search_history);
         historyLv.setAdapter(historyAdapter);
 
@@ -286,7 +302,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         seachIv.setOnClickListener(this);
         soundIv.setOnClickListener(this);
         photoIv.setOnClickListener(this);
-
+        takepictureIv.setOnClickListener(this);
 
         garbagenameList = DBManeger.queryAllGarbageName();
 
@@ -319,6 +335,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
 
+                /*拍照*/
+            case R.id.search_takepicture:
+
+                startTakePicture();
+
+                break;
+
             case R.id.search_sound:
 
                 break;
@@ -326,8 +349,73 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.search_photo:
 
                 break;
+
         }
     }
 
+    private void startTakePicture() {
 
+        /*创建File对象，存储拍照后的图片*/
+        File outputImage = new File(getExternalCacheDir(),"output_image.jpg");
+        if(outputImage.exists()){
+            outputImage.delete();
+        }
+        try {
+            outputImage.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(Build.VERSION.SDK_INT>=24){
+            imageUri = FileProvider.getUriForFile
+                    (this,"com.example.littlegarbage.fileprovider",outputImage);
+        }else{
+            imageUri = Uri.fromFile(outputImage);
+        }
+        /*启动相机程序*/
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+        startActivityForResult(intent,TAKE_PHOTO);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case TAKE_PHOTO:
+                if(resultCode == RESULT_OK){
+
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream
+                                (getContentResolver().openInputStream(imageUri));
+                        String imgbase =bitmaptoString(bitmap);
+                        getPictureData(imgbase);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+
+            default:break;
+        }
+    }
+
+    /*将图像进行Base64编码*/
+    public String bitmaptoString(Bitmap bitmap) {
+
+        // 将Bitmap转换成字符串
+        String string = null;
+        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+        byte[] bytes = bStream.toByteArray();
+        string = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return string;
+    }
+
+    /*图片识别获取相关信息*/
+    public void getPictureData(String imgbase){
+
+
+
+    }
 }
