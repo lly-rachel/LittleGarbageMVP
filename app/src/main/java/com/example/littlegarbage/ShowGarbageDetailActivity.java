@@ -26,7 +26,8 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
     TextView garbagenameTv,camenameTv,citynameTv,confidenceTv,ps_detailTv;
 
     Handler hd;
-    String garbage;
+    String garbage=null;
+    String imgbase=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
         Intent intent=getIntent();
         garbage=intent.getStringExtra("garbage");
+        imgbase=intent.getStringExtra("imgbase");
 
         iniView();
 
@@ -94,7 +96,12 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
             // 城市代码
             String garbageString = null;
             try {
-                garbageString = HttpUtil.sendOkHttpRequest(garbage);
+                if(garbage!=null){
+                    garbageString = HttpUtil.sendOkHttpRequest(garbage);
+                }else if(imgbase!=null){
+                    garbageString=HttpUtil.sendOkHttpPictureRequest(imgbase);
+                }
+
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
             }

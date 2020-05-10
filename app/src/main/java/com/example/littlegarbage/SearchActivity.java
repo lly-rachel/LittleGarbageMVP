@@ -389,7 +389,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         Bitmap bitmap = BitmapFactory.decodeStream
                                 (getContentResolver().openInputStream(imageUri));
                         String imgbase =bitmaptoString(bitmap);
-                        getPictureData(imgbase);
+
+                        putPictureToIntent(imgbase);
+
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -398,6 +400,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             default:break;
         }
+    }
+
+    private void putPictureToIntent(String imgbase) {
+
+        //将图片信息发送给ShowGarbageDetail
+        Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
+        intent.putExtra("imgbase",imgbase);
+        startActivity(intent);
     }
 
     /*将图像进行Base64编码*/
@@ -412,10 +422,5 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         return string;
     }
 
-    /*图片识别获取相关信息*/
-    public void getPictureData(String imgbase){
 
-
-
-    }
 }
