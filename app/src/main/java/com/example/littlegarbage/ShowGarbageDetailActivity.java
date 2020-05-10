@@ -45,7 +45,10 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         // 启用网络线程
         HttpThread ht = new HttpThread();
         ht.start();
+
     }
+
+
 
     private void iniView() {
 
@@ -85,6 +88,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         startActivity(intent);
     }
 
+
     public class HttpThread extends Thread {
 
         @Override
@@ -99,8 +103,9 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
                 if(garbage!=null){
                     garbageString = HttpUtil.sendOkHttpRequest(garbage);
                 }else if(imgbase!=null){
-                    garbageString=HttpUtil.sendOkHttpPictureRequest(imgbase);
+                    garbageString = HttpUtil.sendOkHttpRequest(imgbase);
                 }
+
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
@@ -126,16 +131,25 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
             }
 
-            //更新数据库信息
-            int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
-            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-            if (i <= 0) {
-                DBManeger.addGarbageInfo(garbage,garbageString);
+            if(garbage!=null){
+                //更新数据库信息
+                int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
+                //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+                if (i <= 0) {
+                    DBManeger.addGarbageInfo(garbage,garbageString);
 
+                }
+
+            }else if(imgbase!=null){
+                String garbagename = garbageBean.getResult().getGarbage_info().get(0).getGarbage_name();
+                //更新数据库信息
+                int i = DBManeger.updateInfoByGarbage(garbagename,garbageString);
+                //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+                if (i <= 0) {
+                    DBManeger.addGarbageInfo(garbagename,garbageString);
+
+                }
             }
-
-
-
 
 
         }

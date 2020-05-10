@@ -8,14 +8,17 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -379,7 +382,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch(requestCode){
+            case 1:
+                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    openAlbum();
+                }else{
+                    Toast.makeText(this,"您拒绝了相册访问",Toast.LENGTH_LONG).show();
+                }
+                break;
 
+            default:break;
         }
     }
 
@@ -430,8 +441,74 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
 
+            case CHOOSE_PHOTO:
+                if(resultCode==RESULT_OK){
+                    //判断手机系统版本号
+                    if(Build.VERSION.SDK_INT>=19){
+                        //4.4及以上系统
+                        handleImageOnKitKat(data);
+                    }else{
+                        //4.4以下系统
+                        handleImageBeforeKitKat(data);
+                    }
+                }
             default:
                 break;
+        }
+    }
+
+    private void handleImageBeforeKitKat(Intent data) {
+        Uri uri = data.getData();
+        String imagePath = getImagePath(uri,null);
+        displayImage(imagePath);
+    }
+
+    private void handleImageOnKitKat(Intent data) {
+        String imagePath=null;
+        Uri uri = data.getData();
+        if(DocumentsContract.isDocumentUri(this,uri)){
+            //如果是document类型的Uri，则通过document id处理
+            String docId = DocumentsContract.getDocumentId(uri);
+            if("com.android.providers.media.documents".equals(uri.getAuthority())){
+                String id = docId.split(":")[1];//解析出数字格式的id
+                String selection = MediaStore.Images.Media._ID+"="+id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
+            }else if("com.android.providers.downloads.documents".equals(uri.getAuthority())){
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse(
+                        "content://downloads/public_downloads"),Long.valueOf(docId));
+                imagePath=getImagePath(contentUri,null);
+            }else if("content".equalsIgnoreCase(uri.getScheme())){
+                //如果是content类型的uri，则使用普通方法处理
+                imagePath=getImagePath(uri,null);
+            }else if("file".equalsIgnoreCase(uri.getScheme())){
+                //如果是file类型的uri，直接获取图片路径即可
+                imagePath=uri.getPath();
+            }
+            displayImage(imagePath);
+        }
+    }
+
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        //通过Uri和selection来获取真实的图片的路径
+        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
+        if(cursor!=null){
+            if(cursor.moveToFirst()){
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
+    private void displayImage(String imagePath) {
+        if(imagePath!=null){
+            Bitmap bitmap =BitmapFactory.decodeFile(imagePath);
+            String imgbase = bitmaptoString(bitmap);
+
+            putPictureToIntent(imgbase);
+        }else{
+            Toast.makeText(this,"获取照片失败",Toast.LENGTH_LONG).show();
         }
     }
 
