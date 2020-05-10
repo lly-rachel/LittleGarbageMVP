@@ -44,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,6 +71,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     /*拍照用*/
     public static final int TAKE_PHOTO = 1;
     private Uri imageUri;
+    String imgBase;
 
     /*获取相册图片用*/
     public static final int CHOOSE_PHOTO = 2;
@@ -325,8 +327,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-
-
     @Override
     public void onClick(View v) {
 
@@ -431,9 +431,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream
                                 (getContentResolver().openInputStream(imageUri));
+ //                       Bitmap bitmapCompress = compressImage(bitmap);
                         String imgbase = bitmaptoString(bitmap);
 
-                        putPictureToIntent(imgbase);
+                        getThePictureName(imgbase);
+
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -504,21 +506,92 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private void displayImage(String imagePath) {
         if(imagePath!=null){
             Bitmap bitmap =BitmapFactory.decodeFile(imagePath);
+//            Bitmap bitmapCompress = compressImage(bitmap);
             String imgbase = bitmaptoString(bitmap);
 
-            putPictureToIntent(imgbase);
+            getThePictureName(imgbase);
+
         }else{
             Toast.makeText(this,"获取照片失败",Toast.LENGTH_LONG).show();
         }
     }
 
-    private void putPictureToIntent(String imgbase) {
+    private void getThePictureName(String imgbase) {
 
-        //将图片信息发送给ShowGarbageDetail
-        Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
-        intent.putExtra("imgbase",imgbase);
-        startActivity(intent);
+        imgBase = imgbase;
+        // 启用网络线程
+        HttpThreadToGetPictureName ht = new HttpThreadToGetPictureName();
+        ht.start();
+
     }
+
+    public class HttpThreadToGetPictureName extends Thread{
+
+        @Override
+        public void run() {
+            super.run();
+
+            GarbageBean garbageBean = null;
+            JsonParser jp = new JsonParser();
+
+            // 城市代码
+            String garbageString = null;
+            try {
+
+                garbageString = HttpUtil.sendOkHttpRequest(garbage);
+
+            } catch (JSONException | MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            if (garbageString == null) {
+                garbageString="数据获取错误";
+
+            }else{
+                //获取数据成功
+
+                // 调用自定义的 JSON 解析类解析获取的 JSON 数据
+                garbageBean = jp.GarbageParse(garbageString);
+
+                final String garbageName = garbageBean.getResult().garbage_info.get(0).getGarbage_name();
+
+                // 多线程更新 UI
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        getTheGarbageMessage(garbageName);
+                    }
+                });
+
+            }
+
+
+
+
+        }
+    }
+
+
+
+//    /**
+//     * 压缩图片
+//     * @param image
+//     * @return
+//     */
+//    public static Bitmap compressImage(Bitmap image) {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+//        int options = 100;
+//        while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
+//            baos.reset();//重置baos即清空baos
+//            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+//            options -= 10;//每次都减少10
+//        }
+//        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
+//        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
+//        return bitmap;
+//    }
 
     /*将图像进行Base64编码*/
     public String bitmaptoString(Bitmap bitmap) {
@@ -531,6 +604,4 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         string = Base64.encodeToString(bytes, Base64.DEFAULT);
         return string;
     }
-
-
 }

@@ -3,8 +3,10 @@ package com.example.littlegarbage;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import com.example.littlegarbage.db.DBManeger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.util.List;
 
@@ -27,7 +30,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
     Handler hd;
     String garbage=null;
-    String imgbase=null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,6 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
         Intent intent=getIntent();
         garbage=intent.getStringExtra("garbage");
-        imgbase=intent.getStringExtra("imgbase");
 
         iniView();
 
@@ -100,12 +102,8 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
             // 城市代码
             String garbageString = null;
             try {
-                if(garbage!=null){
-                    garbageString = HttpUtil.sendOkHttpRequest(garbage);
-                }else if(imgbase!=null){
-                    garbageString = HttpUtil.sendOkHttpRequest(imgbase);
-                }
 
+                garbageString = HttpUtil.sendOkHttpRequest(garbage);
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
@@ -131,24 +129,12 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
             }
 
-            if(garbage!=null){
-                //更新数据库信息
-                int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
-                //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-                if (i <= 0) {
-                    DBManeger.addGarbageInfo(garbage,garbageString);
+            //更新数据库信息
+            int i = DBManeger.updateInfoByGarbage(garbage,garbageString);
+            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+            if (i <= 0) {
+                DBManeger.addGarbageInfo(garbage,garbageString);
 
-                }
-
-            }else if(imgbase!=null){
-                String garbagename = garbageBean.getResult().getGarbage_info().get(0).getGarbage_name();
-                //更新数据库信息
-                int i = DBManeger.updateInfoByGarbage(garbagename,garbageString);
-                //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-                if (i <= 0) {
-                    DBManeger.addGarbageInfo(garbagename,garbageString);
-
-                }
             }
 
 
