@@ -3,6 +3,7 @@ package com.example.littlegarbage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class GarbageBean {
@@ -116,7 +117,7 @@ public class GarbageBean {
 
 
 
-        public static class GarbageInfoBean {
+        public static class GarbageInfoBean implements Serializable {
             /**
              * cate_name : 湿垃圾
              * city_id : 310000

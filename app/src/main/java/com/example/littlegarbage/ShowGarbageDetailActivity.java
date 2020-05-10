@@ -30,7 +30,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
     Handler hd;
     String garbage=null;
-
+    GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +39,76 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
         Intent intent=getIntent();
         garbage=intent.getStringExtra("garbage");
+        garbageInfoBean = (GarbageBean.ResultBean.GarbageInfoBean) intent.getSerializableExtra("bean");
 
         iniView();
+        if(garbage!=null){
+            hd = new Handler();
 
-        hd = new Handler();
+            // 启用网络线程
+            HttpThread ht = new HttpThread();
+            ht.start();
+        }else if (garbageInfoBean!=null){
+            setDataBeanText(garbageInfoBean);
+            //更新数据库信息
+            int i = DBManeger.updateInfoByGarbage(garbageInfoBean.getGarbage_name(),garbageInfoBean.toString());
+            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+            if (i <= 0) {
+                DBManeger.addGarbageInfo(garbageInfoBean.getGarbage_name(),garbageInfoBean.toString());
 
-        // 启用网络线程
-        HttpThread ht = new HttpThread();
-        ht.start();
+            }
+        }
 
     }
 
+    private void setDataBeanText(GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean) {
 
+        garbagenameTv.setText(garbageInfoBean.getGarbage_name());
+        camenameTv.setText(garbageInfoBean.getCate_name());
+        citynameTv.setText(garbageInfoBean.getCity_name());
+        confidenceTv.setText(String.valueOf(garbageInfoBean.getConfidence()));
+        ps_detailTv.setText(garbageInfoBean.getPs());
+        statusTv.setText("获取数据成功");
+        justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
+
+        switch (garbageInfoBean.getCate_name()){
+
+            case "湿垃圾":
+                garbageIv.setImageResource(R.mipmap.shilaji);
+                break;
+
+            case "其他垃圾":
+                garbageIv.setImageResource(R.mipmap.qitalaji);
+                break;
+
+            case "有害垃圾":
+                garbageIv.setImageResource(R.mipmap.youhailaji);
+                break;
+
+            case "可回收物":
+                garbageIv.setImageResource(R.mipmap.kehuishouwu);
+                break;
+
+            case "干垃圾":
+                garbageIv.setImageResource(R.mipmap.ganlaji);
+                break;
+
+            default:  garbageIv.setImageResource(R.mipmap.laji);
+        }
+
+            justpictureIv.setImageResource(R.mipmap.bg);
+
+
+
+            garbagenametext.setText("垃圾名称：");
+            camenametext.setText("垃圾类型：");
+            citynametext.setText("城市：");
+            confidencetext.setText("识别置信度：");
+            ps_detailtext.setText("具体信息：");
+
+
+
+    }
 
     private void iniView() {
 
@@ -142,58 +200,13 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
         private void setDataText(GarbageBean finalGb) {
 
-            if(finalGb!=null){
+            if(finalGb!=null) {
 
                 List<GarbageBean.ResultBean.GarbageInfoBean> garbageInfoBean = finalGb.getResult().getGarbage_info();
 
-                garbagenameTv.setText(garbageInfoBean.get(0).getGarbage_name());
-                camenameTv.setText(garbageInfoBean.get(0).getCate_name());
-                citynameTv.setText(garbageInfoBean.get(0).getCity_name());
-                confidenceTv.setText(String.valueOf(garbageInfoBean.get(0).getConfidence()));
-                ps_detailTv.setText(garbageInfoBean.get(0).getPs());
-                statusTv.setText("获取数据成功");
-                justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
+                setDataBeanText(garbageInfoBean.get(0));
 
-                switch (garbageInfoBean.get(0).getCate_name()){
-
-                    case "湿垃圾":
-                        garbageIv.setImageResource(R.mipmap.shilaji);
-                        break;
-
-                    case "其他垃圾":
-                        garbageIv.setImageResource(R.mipmap.qitalaji);
-                        break;
-
-                    case "有害垃圾":
-                        garbageIv.setImageResource(R.mipmap.youhailaji);
-                        break;
-
-                    case "可回收物":
-                        garbageIv.setImageResource(R.mipmap.kehuishouwu);
-                        break;
-
-                    case "干垃圾":
-                        garbageIv.setImageResource(R.mipmap.ganlaji);
-                        break;
-
-                    default:  garbageIv.setImageResource(R.mipmap.laji);
-                }
             }
-
-
-
-
-            justpictureIv.setImageResource(R.mipmap.bg);
-
-
-
-            garbagenametext.setText("垃圾名称：");
-            camenametext.setText("垃圾类型：");
-            citynametext.setText("城市：");
-            confidencetext.setText("识别置信度：");
-            ps_detailtext.setText("具体信息：");
-
-
         }
     }
 }

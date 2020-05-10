@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,7 +18,9 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -25,6 +28,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -108,7 +112,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
                 String garbage = (String) historyAdapter.getItem(index);
-                getTheGarbageMessage(garbage);
+                getTheGarbageMessageToIntent(garbage);
             }
         });
 
@@ -180,7 +184,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 garbage = newdata.get(position);
-                getTheGarbageMessage(garbage);
+                getTheGarbageMessageToIntent(garbage);
             }
         });
 
@@ -188,7 +192,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /*根据传进garbage到展示界面*/
-    private void getTheGarbageMessage(String garbage) {
+    private void getTheGarbageMessageToIntent(String garbage) {
 
         Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
         intent.putExtra("garbage",garbage);
@@ -338,7 +342,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
                 if(!TextUtils.isEmpty(garbage)){
 
-                    getTheGarbageMessage(garbage);
+                    getTheGarbageMessageToIntent(garbage);
 
                 }else{
                     Toast.makeText(this,"输入信息不能为空",Toast.LENGTH_LONG).show();
@@ -419,45 +423,49 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         startActivityForResult(intent,TAKE_PHOTO);
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case TAKE_PHOTO:
-                if (resultCode == RESULT_OK) {
 
-                    try {
-                        Bitmap bitmap = BitmapFactory.decodeStream
-                                (getContentResolver().openInputStream(imageUri));
- //                       Bitmap bitmapCompress = compressImage(bitmap);
-                        String imgbase = bitmaptoString(bitmap);
+            switch (requestCode) {
+                case TAKE_PHOTO:
+                    if (resultCode == RESULT_OK) {
 
-                        getThePictureName(imgbase);
+                        try {
+                            Bitmap bitmap = BitmapFactory.decodeStream
+                                    (getContentResolver().openInputStream(imageUri));
+                            //                       Bitmap bitmapCompress = compressImage(bitmap);
+                            //                       String imgbase = bitmaptoString(bitmap);
 
+                            getThePictureName(bitmap);
 
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case CHOOSE_PHOTO:
-                if(resultCode==RESULT_OK){
-                    //判断手机系统版本号
-                    if(Build.VERSION.SDK_INT>=19){
-                        //4.4及以上系统
-                        handleImageOnKitKat(data);
-                    }else{
-                        //4.4以下系统
-                        handleImageBeforeKitKat(data);
+                case CHOOSE_PHOTO:
+                    if (resultCode == RESULT_OK) {
+                        //判断手机系统版本号
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            //4.4及以上系统
+                            handleImageOnKitKat(data);
+                        } else {
+                            //4.4以下系统
+                            handleImageBeforeKitKat(data);
+                        }
                     }
-                }
-            default:
-                break;
+                default:
+                    break;
+            }
         }
-    }
+
+
 
     private void handleImageBeforeKitKat(Intent data) {
         Uri uri = data.getData();
@@ -507,18 +515,20 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         if(imagePath!=null){
             Bitmap bitmap =BitmapFactory.decodeFile(imagePath);
 //            Bitmap bitmapCompress = compressImage(bitmap);
-            String imgbase = bitmaptoString(bitmap);
+//            String imgbase = bitmaptoString(bitmap);
 
-            getThePictureName(imgbase);
+            getThePictureName(bitmap);
 
         }else{
             Toast.makeText(this,"获取照片失败",Toast.LENGTH_LONG).show();
         }
     }
 
-    private void getThePictureName(String imgbase) {
+    private void getThePictureName(Bitmap bitmap) {
 
-        imgBase = imgbase;
+        Bitmap bm = compressImage(bitmap);
+
+        imgBase = bitmaptoString(bm);
         // 启用网络线程
         HttpThreadToGetPictureName ht = new HttpThreadToGetPictureName();
         ht.start();
@@ -538,7 +548,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             String garbageString = null;
             try {
 
-                garbageString = HttpUtil.sendOkHttpRequest(garbage);
+                garbageString = HttpUtil.sendOkHttpPictureRequest(imgBase);
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
@@ -548,19 +558,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 garbageString="数据获取错误";
 
             }else{
-                //获取数据成功
-
-                // 调用自定义的 JSON 解析类解析获取的 JSON 数据
-                garbageBean = jp.GarbageParse(garbageString);
-
-                final String garbageName = garbageBean.getResult().garbage_info.get(0).getGarbage_name();
 
                 // 多线程更新 UI
+                final String finalGarbageString = garbageString;
                 hd.post(new Runnable() {
                     @Override
                     public void run() {
 
-                        getTheGarbageMessage(garbageName);
+                        getTheGarbageMessage(finalGarbageString);
                     }
                 });
 
@@ -572,26 +577,84 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    public void getTheGarbageMessage(String finalstring){
+        List<GarbageBean.ResultBean.GarbageInfoBean> NameList = new ArrayList<>();
+        Double confidence_max=0.0;
+        String garbageName = null;
+        if(finalstring!=null) {
+            JSONObject joname = null;
+            try {
+                joname = new JSONObject(finalstring);
+                String code = joname.getString("code");
+                if(code.equals("10000")){
+                    String result = joname.getString("result");
+
+                    JSONObject resultGarbage = new JSONObject(result);
+
+                    JSONArray listArray = resultGarbage.getJSONArray("garbage_info");
+
+                    String cate_name = null;
+                    String city_id = null;
+                    String city_name = null;
+                    double confidence = 0;
+                    String garbage_name = null;
+                    String ps = null;
+
+                    for (int i = 0; i < listArray.length(); i++) {
+                        JSONObject jsonArray = listArray.getJSONObject(i);
+                        cate_name = jsonArray.getString("cate_name");
+                        city_id = jsonArray.getString("city_id");
+                        city_name = jsonArray.getString("city_name");
+                        confidence = jsonArray.getDouble("confidence");
+                        garbage_name = jsonArray.getString("garbage_name");
+                        ps = jsonArray.getString("ps");
+                        if (confidence >= confidence_max) {
+                            //找到可信度最大的
+                            confidence_max = confidence;
+                            GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean = new GarbageBean.ResultBean.GarbageInfoBean
+                                    (cate_name, city_id, city_name, confidence, garbage_name, ps);
+                            NameList.add(garbageInfoBean);
+                        }
+
+                    }
+
+                    for (int i = 0; i < NameList.size(); i++) {
+                        if (confidence_max == NameList.get(i).getConfidence()) {
+                            GarbageBean.ResultBean.GarbageInfoBean gib = NameList.get(i);
+                            Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
+                            intent.putExtra("bean", gib);
+                           // intent.putExtra("garbage",gib.getGarbage_name());
+                            startActivity(intent);
+                            break;
+                        }
+                    }
+                }
 
 
-//    /**
-//     * 压缩图片
-//     * @param image
-//     * @return
-//     */
-//    public static Bitmap compressImage(Bitmap image) {
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-//        int options = 100;
-//        while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-//            baos.reset();//重置baos即清空baos
-//            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
-//            options -= 10;//每次都减少10
-//        }
-//        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
-//        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
-//        return bitmap;
-//    }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 压缩图片
+     * @param image
+     * @return
+     */
+    public static Bitmap compressImage(Bitmap image) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+        while (baos.toByteArray().length / 1024 > 1024) {  //循环判断如果压缩后图片是否大于1M,大于继续压缩
+            baos.reset();//重置baos即清空baos
+            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;//每次都减少10
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
+        return bitmap;
+    }
 
     /*将图像进行Base64编码*/
     public String bitmaptoString(Bitmap bitmap) {
@@ -599,7 +662,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         // 将Bitmap转换成字符串
         String string = null;
         ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bStream);
         byte[] bytes = bStream.toByteArray();
         string = Base64.encodeToString(bytes, Base64.DEFAULT);
         return string;

@@ -83,7 +83,7 @@ public class HttpUtil {
                 .readTimeout(7000, TimeUnit.SECONDS)
                 .build();
 
-        String url1 = "https://aiapi.jd.com/jdai/garbageTextSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
+        String url1 = "https://aiapi.jd.com/jdai/garbageImageSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
         String s1 = GetMD5.md5("1a8c89772abf812630f6687255d22a3b" + time);
         String urls = url1 + time + "&sign=" + s1;

@@ -10,8 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/earth"
-        android:padding="10dp"
-        android:paddingBottom="50dp"
         android:text="Little Garbage"
         android:layout_centerHorizontal="true"
         android:textSize="50sp"
@@ -22,7 +20,7 @@
     <ImageView
         android:id="@+id/earth"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@mipmap/start"
