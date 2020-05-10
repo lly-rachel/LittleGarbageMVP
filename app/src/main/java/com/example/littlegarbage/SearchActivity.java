@@ -1,10 +1,15 @@
 package com.example.littlegarbage;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -62,6 +67,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     /*拍照用*/
     public static final int TAKE_PHOTO = 1;
     private Uri imageUri;
+
+    /*获取相册图片用*/
+    public static final int CHOOSE_PHOTO = 2;
 
     ImageView seachIv,soundIv,photoIv,takepictureIv;
     ListView historyLv;
@@ -342,13 +350,35 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
 
+                /*获取相册图片*/
+            case R.id.search_photo:
+
+                if(ContextCompat.checkSelfPermission
+                        (this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+                }else{
+                    openAlbum();
+                }
+                break;
+
             case R.id.search_sound:
 
                 break;
 
-            case R.id.search_photo:
+        }
+    }
 
-                break;
+    private void openAlbum() {
+
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent,CHOOSE_PHOTO);//打开相册
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode){
 
         }
     }
@@ -380,15 +410,17 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             case TAKE_PHOTO:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
 
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream
                                 (getContentResolver().openInputStream(imageUri));
-                        String imgbase =bitmaptoString(bitmap);
+                        String imgbase = bitmaptoString(bitmap);
 
                         putPictureToIntent(imgbase);
 
@@ -398,7 +430,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
 
-            default:break;
+            default:
+                break;
         }
     }
 
