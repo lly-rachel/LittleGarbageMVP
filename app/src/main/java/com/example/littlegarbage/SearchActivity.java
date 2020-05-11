@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,9 +17,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -28,18 +25,15 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 
 import android.widget.ListView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
@@ -58,8 +52,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import java.util.List;
-
-
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -122,6 +114,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
+    /*获取热门搜索数据*/
     public class HttpThreadToGetData extends Thread{
 
         @Override
@@ -178,6 +171,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         setListener();
     }
 
+    /*热门搜索的点击事件*/
     private void setListener() {
 
         hot_historyGv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -201,7 +195,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-
+    /*初始化AutoCompeleteTextView，设置适配器*/
     public  void iniEdt() {
 
         seachnameATV = findViewById(R.id.garbage_search_autoCompelete);
@@ -423,8 +417,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         startActivityForResult(intent,TAKE_PHOTO);
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
@@ -466,7 +458,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
 
 
-
     private void handleImageBeforeKitKat(Intent data) {
         Uri uri = data.getData();
         String imagePath = getImagePath(uri,null);
@@ -498,6 +489,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /*获取图片路径*/
     private String getImagePath(Uri uri, String selection) {
         String path = null;
         //通过Uri和selection来获取真实的图片的路径
@@ -535,6 +527,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    /*网络请求，获取图像识别的数据*/
     public class HttpThreadToGetPictureName extends Thread{
 
         @Override
@@ -577,6 +570,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /*解析图片识别的json数据*/
     public void getTheGarbageMessage(String finalstring){
         List<GarbageBean.ResultBean.GarbageInfoBean> NameList = new ArrayList<>();
         Double confidence_max=0.0;
@@ -637,16 +631,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    /**
-     * 压缩图片
-     * @param image
-     * @return
-     */
+    /* 压缩图片(确保图片小于2M)*/
     public static Bitmap compressImage(Bitmap image) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
         int options = 90;
-        while (baos.toByteArray().length / 1024 > 1024) {  //循环判断如果压缩后图片是否大于1M,大于继续压缩
+        while (baos.toByteArray().length / 1024 > 1024*2) {  //循环判断如果压缩后图片是否大于2M,大于继续压缩
             baos.reset();//重置baos即清空baos
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
             options -= 10;//每次都减少10

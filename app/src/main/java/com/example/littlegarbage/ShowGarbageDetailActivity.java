@@ -3,21 +3,16 @@ package com.example.littlegarbage;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.littlegarbage.db.DBManeger;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.util.List;
 
@@ -61,6 +56,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
     }
 
+    /*根据传入的garbagebean数据，将数据放入展示界面*/
     private void setDataBeanText(GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean) {
 
         garbagenameTv.setText(garbageInfoBean.getGarbage_name());
@@ -133,6 +129,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         ps_detailTv=findViewById(R.id.ps_detail);
     }
 
+    /*点击确定按钮，返回搜索界面*/
     @Override
     public void onClick(View v) {
         Intent intent = null;
@@ -148,7 +145,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         startActivity(intent);
     }
 
-
+    /*根据garbage获取具体信息*/
     public class HttpThread extends Thread {
 
         @Override
