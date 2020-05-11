@@ -20,9 +20,9 @@
 
     <ImageView
         android:id="@+id/picture_laji"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
         android:src="@mipmap/laji"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/picture_laji"
         android:orientation="vertical"
-        android:paddingTop="10dp"
+        android:paddingTop="3dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_margin="10dp"

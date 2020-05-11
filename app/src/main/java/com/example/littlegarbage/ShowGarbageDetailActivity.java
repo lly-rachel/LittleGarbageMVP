@@ -14,6 +14,7 @@ import com.example.littlegarbage.db.DBManeger;
 import org.json.JSONException;
 
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class ShowGarbageDetailActivity extends AppCompatActivity implements View.OnClickListener {
@@ -62,7 +63,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         garbagenameTv.setText(garbageInfoBean.getGarbage_name());
         camenameTv.setText(garbageInfoBean.getCate_name());
         citynameTv.setText(garbageInfoBean.getCity_name());
-        confidenceTv.setText(String.valueOf(garbageInfoBean.getConfidence()));
+        confidenceTv.setText(doubleToString(garbageInfoBean.getConfidence()));
         ps_detailTv.setText(garbageInfoBean.getPs());
         statusTv.setText("获取数据成功");
         justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
@@ -205,5 +206,11 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
             }
         }
+    }
+
+    /*将confidence这个double类型参数转为两位小数展示*/
+    public static String doubleToString(double num){
+        //使用0.00不足位补0，#.##仅保留有效位
+        return new DecimalFormat("0.00").format(num);
     }
 }
