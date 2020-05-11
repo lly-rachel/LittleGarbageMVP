@@ -52,7 +52,8 @@
             android:id="@+id/search_sound"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/sound"
+            android:padding="2dp"
+            android:src="@mipmap/yuyin"
             android:background="@drawable/stroke"
             android:layout_weight="1"
             />

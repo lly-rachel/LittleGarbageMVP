@@ -8,15 +8,20 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
@@ -71,6 +76,19 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     /*获取相册图片用*/
     public static final int CHOOSE_PHOTO = 2;
+
+    /*录音用*/
+    private static String[] PERMISSIONS_STORAGE = {android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.RECORD_AUDIO};
+    boolean isFirst = true;//判断是第一次点击录音，第二次点击停止录音
+
+    private static int REQUEST_PERMISSION_CODE = 3;
+
+    MediaRecorder recorder;
+    File audioFile; //录音保存的文件
+    boolean isRecoding=false;// true 表示正在录音
+
 
     ImageView seachIv,soundIv,photoIv,takepictureIv;
     ListView historyLv;
@@ -328,6 +346,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
 
+
+
         switch (v.getId()){
 
             case R.id.garbage_search:
@@ -362,12 +382,179 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
 
+                /*录音，获取音频文件*/
             case R.id.search_sound:
+
+                open(this);//动态获取权限
+
+                if(isFirst){
+                    soundIv.setImageResource(R.mipmap.yuyinzanting);
+
+                    startin();
+                    isFirst=false;
+                }else{
+                    soundIv.setImageResource(R.mipmap.yuyin);
+
+
+                    stopin();
+                    HttpThreadToGetSoundName getsoundName = new HttpThreadToGetSoundName();
+                    getsoundName.start();
+
+                    isFirst=true;
+                }
+
+
+
+
 
                 break;
 
         }
     }
+
+    /*初始化MediaRecorder*/
+    public void init(){
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置播放源 麦克风
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); //设置输入格式 3gp
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //设置编码 AMR
+    }
+
+    /*实现录音功能*/
+    public void recod(){
+        //这里为文件保存路径
+        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/MediaRecorderTest");
+        init();
+        if(!path.exists())
+        {
+            path.mkdirs();
+        }
+
+        try {
+            //这个地方写文件名，可以利用时间来保存为不同的文件名
+            audioFile=new File(path,"test.amr");
+            if(audioFile.exists())
+            {
+                audioFile.delete();
+            }
+            audioFile.createNewFile();//创建文件
+
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't create recording audio file", e);
+        }
+
+        recorder.setOutputFile(audioFile.getAbsolutePath());
+
+        try {
+            recorder.prepare();
+        } catch (IllegalStateException e) {
+            throw new RuntimeException("IllegalStateException on MediaRecorder.prepare", e);
+        } catch (IOException e) {
+            throw new RuntimeException("IOException on MediaRecorder.prepare", e);
+        }
+        isRecoding=true;
+        recorder.start();
+    }
+
+    /*开始录音*/
+    public void startin(){
+        Toast.makeText(this,"开始录音",Toast.LENGTH_SHORT).show();
+        recod();
+    }
+
+    /*停止录音*/
+    public void stopin(){
+        if(isRecoding)
+        {
+            Toast.makeText(this,"停止录音",Toast.LENGTH_SHORT).show();
+            if (recorder != null){
+                try {
+                    recorder.stop();
+                } catch (IllegalStateException e) {
+
+                    //e.printStackTrace();
+                    recorder = null;
+                    recorder = new MediaRecorder();
+                }
+                recorder.release();
+                recorder = null;
+                Toast.makeText(this,"正在获取数据..耐心等待",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /*网络请求，获取语音识别的数据*/
+    public class HttpThreadToGetSoundName extends Thread{
+
+        @Override
+        public void run() {
+            super.run();
+
+            GarbageBean garbageBean = null;
+            JsonParser jp = new JsonParser();
+
+            // 城市代码
+            String garbageString = null;
+            try {
+
+                String model =  android.os.Build.MODEL;
+                String version_release = android.os.Build.VERSION.RELEASE;
+                Integer packagecode = packageCode(getApplicationContext());
+
+                garbageString = HttpUtil.sendOkHttpSoundRequest(audioFile,model,version_release,packagecode);
+
+            } catch (JSONException | MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            if (garbageString == null) {
+                garbageString="数据获取错误";
+
+            }else{
+
+                // 多线程更新 UI
+                final String finalGarbageString = garbageString;
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        getTheGarbageMessage(finalGarbageString);
+                    }
+                });
+
+            }
+
+
+
+
+        }
+    }
+
+    /*获取客户端版本号*/
+    public static int packageCode(Context context) {
+        PackageManager manager = context.getPackageManager();
+        int code = 0;
+        try {
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            code = info.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+    /*动态获取权限*/
+    public void open(Activity obj){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            for (int i = 0 ; i < PERMISSIONS_STORAGE.length ; i++){
+                if (ActivityCompat.checkSelfPermission(obj,
+                        PERMISSIONS_STORAGE[i])!= PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(obj, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
+                }
+            }
+        }
+    }
+
 
     private void openAlbum() {
 

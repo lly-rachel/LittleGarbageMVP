@@ -1,6 +1,10 @@
 package com.example.littlegarbage;
 
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -117,19 +121,19 @@ public class HttpUtil {
     }
 
 
-    public static String sendOkHttpSoundRequest(File file) throws JSONException, MalformedURLException {
+    public static String sendOkHttpSoundRequest(File file,String model,String VERSION,Integer packagecode) throws JSONException, MalformedURLException {
 
         JSONObject jsonEncode = new JSONObject();
         jsonEncode.put("channel",1);//int类型，⾳频声道数，目前只⽀持单声道，填1
-        jsonEncode.put("format","mp3");//string类型，⾳频格式，支持wav， amr，mp3
+        jsonEncode.put("format","amr");//string类型，⾳频格式，支持wav， amr，mp3
         jsonEncode.put("sample_rate",16000);//int类型，采样率，目前只⽀持填写16000
         jsonEncode.put("post_process",0);//int类型，数字后处理:1为强制开启(开启后，会把结果中的数字汉字转换成阿拉伯数字。例如，识别结果中的“一千”会 转成“1000”)，0为根据服务端配置是否进行数字后处理
 
         JSONObject jsonProperty = new JSONObject();
-        jsonProperty.put("autoend",false);
+        jsonProperty.put("autoend",true);
         jsonProperty.put("encode",jsonEncode);
-        jsonProperty.put("platform","\"Linux\",\"version\":\"0.0.0.1\"");//{平台}&{机型}&{系统版本号}
-        jsonProperty.put("version", "0.0.0.1");//客户端版本号
+        jsonProperty.put("platform","Android&"+model+"&"+VERSION);//{平台}&{机型}&{系统版本号}
+        jsonProperty.put("version", String.valueOf(packagecode));//客户端版本号
 
 //        JSONObject json = new JSONObject();
 //        json.put("cityId",String.valueOf(310000));
@@ -149,23 +153,20 @@ public class HttpUtil {
 
         URL url = new URL(urls);
 
-//
-        // form 表单形式上传
-        MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        if(file != null){
-            // MediaType.parse() 里面是上传的文件类型。
-            RequestBody body = RequestBody.create(MediaType.parse("application/octet-stream"), file);
-            String filename = file.getName();
-            // 参数分别为， 请求key ，文件名称 ， RequestBody
-            requestBody.addFormDataPart("file", filename, body);
-        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/amr"), file);    //创建requestBody对象
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), requestBody)
+                .build();
+
 
 
         Request request = new Request.Builder()
              .url(url)
              .addHeader("cityId", String.valueOf(310000))
                 .addHeader("property", String.valueOf(jsonProperty))
-             .post(requestBody.build())
+             .post(multipartBody)
              .build();
 
         Response response = null;
@@ -184,4 +185,6 @@ public class HttpUtil {
 
         return null;
     }
+
+
 }
