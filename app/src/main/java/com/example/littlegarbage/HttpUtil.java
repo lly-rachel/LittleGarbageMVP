@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-
+import okhttp3.FormBody;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -123,28 +125,29 @@ public class HttpUtil {
 
     public static String sendOkHttpSoundRequest(File file,String model,String VERSION,Integer packagecode) throws JSONException, MalformedURLException {
 
+        File soundFile = new File("/storage/emulated/0/MediaRecorderTest/test.mp3");
+
+
         JSONObject jsonEncode = new JSONObject();
         jsonEncode.put("channel",1);//int类型，⾳频声道数，目前只⽀持单声道，填1
-        jsonEncode.put("format","amr");//string类型，⾳频格式，支持wav， amr，mp3
+        jsonEncode.put("format","mp3");//string类型，⾳频格式，支持wav， amr，mp3
         jsonEncode.put("sample_rate",16000);//int类型，采样率，目前只⽀持填写16000
         jsonEncode.put("post_process",0);//int类型，数字后处理:1为强制开启(开启后，会把结果中的数字汉字转换成阿拉伯数字。例如，识别结果中的“一千”会 转成“1000”)，0为根据服务端配置是否进行数字后处理
 
+
         JSONObject jsonProperty = new JSONObject();
-        jsonProperty.put("autoend",true);
+        jsonProperty.put("autoend",false);
         jsonProperty.put("encode",jsonEncode);
         jsonProperty.put("platform","Android&"+model+"&"+VERSION);//{平台}&{机型}&{系统版本号}
-        jsonProperty.put("version", String.valueOf(packagecode));//客户端版本号
+        jsonProperty.put("version","0.0.0.1");//客户端版本号
 
-//        JSONObject json = new JSONObject();
-//        json.put("cityId",String.valueOf(310000));
-//        json.put("property",jsonProperty);
-//        json.put()
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(7000, TimeUnit.SECONDS)
                 .writeTimeout(7000, TimeUnit.SECONDS)
                 .readTimeout(7000, TimeUnit.SECONDS)
                 .build();
+
 
         String url1 = "https://aiapi.jd.com/jdai/garbageVoiceSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
@@ -154,20 +157,32 @@ public class HttpUtil {
         URL url = new URL(urls);
 
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/amr"), file);    //创建requestBody对象
-        MultipartBody multipartBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", file.getName(), requestBody)
+
+//        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/mp3"),soundFile);    //创建requestBody对象
+//        MultipartBody multipartBody = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("file", soundFile.getName(), requestBody)
+//                .build();
+
+//        RequestBody requestBody = RequestBody.create(soundFile,MediaType.parse("audio/mp3"));
+//
+//        Request request = new Request.Builder()
+//                .url(url)
+// //               .addHeader("cityId", String.valueOf(310000))
+//                .addHeader("property", String.valueOf(jsonProperty))
+//                .post(requestBody)
+//                .build();
+
+        RequestBody body = RequestBody.create(MediaType.parse("mp3"), soundFile);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("cityId",String.valueOf(310000))
+                .addHeader("property", String.valueOf(jsonProperty))
+                .post(body)
                 .build();
 
 
 
-        Request request = new Request.Builder()
-             .url(url)
-             .addHeader("cityId", String.valueOf(310000))
-                .addHeader("property", String.valueOf(jsonProperty))
-             .post(multipartBody)
-             .build();
 
         Response response = null;
             try {

@@ -418,6 +418,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置播放源 麦克风
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); //设置输入格式 3gp
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //设置编码 AMR
+
     }
 
     /*实现录音功能*/
@@ -432,7 +433,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         try {
             //这个地方写文件名，可以利用时间来保存为不同的文件名
-            audioFile=new File(path,"test.amr");
+            audioFile=new File(path,"test.mp3");
             if(audioFile.exists())
             {
                 audioFile.delete();
@@ -497,7 +498,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             String garbageString = null;
             try {
 
-                String model =  android.os.Build.MODEL;
+                String model = android.os.Build.MODEL;
                 String version_release = android.os.Build.VERSION.RELEASE;
                 Integer packagecode = packageCode(getApplicationContext());
 
