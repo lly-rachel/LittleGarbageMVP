@@ -33,10 +33,14 @@ public class HttpUtil {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 
-    public static String sendOkHttpRequest(String garbage) throws JSONException, MalformedURLException {
+    public static String sendOkHttpRequest(String garbage,String citydaima) throws JSONException, MalformedURLException {
+
+        if(citydaima==null){
+            citydaima=String.valueOf(310000);
+        }
 
         JSONObject json = new JSONObject();
-        json.put("cityId",String.valueOf(310000));
+        json.put("cityId",citydaima);
         json.put("text",garbage);
 
 
@@ -78,10 +82,14 @@ public class HttpUtil {
         return null;
     }
 
-    public static String sendOkHttpPictureRequest(String imgbase) throws JSONException, MalformedURLException {
+    public static String sendOkHttpPictureRequest(String imgbase,String citydaima) throws JSONException, MalformedURLException {
+
+        if(citydaima==null){
+            citydaima=String.valueOf(310000);
+        }
 
         JSONObject json = new JSONObject();
-        json.put("cityId",String.valueOf(310000));
+        json.put("cityId",citydaima);
         json.put("imgBase64",imgbase);
 
 

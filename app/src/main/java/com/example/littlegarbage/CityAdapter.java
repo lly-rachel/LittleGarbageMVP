@@ -54,14 +54,6 @@ public class CityAdapter extends BaseAdapter {
         final String name = mlist.get(position);
         holder.citynameTv.setText(name);
 
-        holder.citynameTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                getcity = holder.citynameTv.toString();
-            }
-        });
-
         return convertView;
     }
 
@@ -69,8 +61,9 @@ public class CityAdapter extends BaseAdapter {
 
         TextView citynameTv;
 
+
         public CityViewHolder(View itemView){
-            citynameTv=itemView.findViewById(R.id.citytext);
+            citynameTv=itemView.findViewById(R.id.cityname);
 
         }
     }

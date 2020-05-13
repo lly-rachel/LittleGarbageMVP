@@ -2,19 +2,12 @@ package com.example.littlegarbage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.tv.TvView;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.littlegarbage.db.DBManeger;
@@ -35,6 +28,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
     Handler hd;
     String garbage=null;
     GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean=null;
+    String citydaima;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +38,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         Intent intent=getIntent();
         garbage=intent.getStringExtra("garbage");
         garbageInfoBean = (GarbageBean.ResultBean.GarbageInfoBean) intent.getSerializableExtra("bean");
+        citydaima = intent.getStringExtra("citydaima");
 
         iniView();
         if(garbage!=null){
@@ -125,8 +120,8 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         sureIv = findViewById(R.id.detail_sure);
         sureIv.setOnClickListener(this);
 
-        sureIv = findViewById(R.id.detail_share);
-        sureIv.setOnClickListener(this);
+        shareIv = findViewById(R.id.detail_share);
+        shareIv.setOnClickListener(this);
 
         garbagenametext=findViewById(R.id.text_garbage_name);
         camenametext=findViewById(R.id.text_came_name);
@@ -191,7 +186,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
             String garbageString = null;
             try {
 
-                garbageString = HttpUtil.sendOkHttpRequest(garbage);
+                garbageString = HttpUtil.sendOkHttpRequest(garbage,citydaima);
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();

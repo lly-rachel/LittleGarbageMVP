@@ -16,7 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MoreChooseActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -24,9 +26,9 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
     TextView citychooseTv;
     ListView citylist;
 
-    String city;
+    boolean isFirst = true;
 
-    private List<String> list = new ArrayList<String>();
+    private List<String> list = new ArrayList<>();
 
 
     @Override
@@ -37,6 +39,7 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
         surechooseIv= findViewById(R.id.surechange_Iv);
         citychooseTv=findViewById(R.id.city_choose);
         citylist = findViewById(R.id.listview);
+
 
         surechooseIv.setOnClickListener(this);
         citychooseTv.setOnClickListener(this);
@@ -49,7 +52,15 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
         switch (v.getId()){
 
             case R.id.surechange_Iv:
+
                 Intent intent = new Intent(this,SearchActivity.class);
+
+                if(citychooseTv.getText().equals("选择地区")){
+
+                }else{
+                    intent.putExtra("city",citychooseTv.getText());
+                }
+
                 startActivity(intent);
                 break;
 
@@ -59,6 +70,8 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
                 ShowDialog();//弹框操作
 
                 break;
+
+
         }
 
 
@@ -68,16 +81,20 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
     public void ShowDialog() {
 
-        //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
-        list.add("上海");
-        list.add("宁波");
-        list.add("西安");
-        list.add("深圳");
-        list.add("北京");
+        //避免连续点击，list连续添加 只在第一次点击时添加
+        if(isFirst){
+            //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
+            list.add("上海");
+            list.add("宁波");
+            list.add("西安");
+            list.add("深圳");
+            list.add("北京");
+            isFirst=false;
+        }
+
 
 
         CityAdapter adapter = new CityAdapter(list,this);
-
         adapter.notifyDataSetChanged();
         citylist.setAdapter(adapter);
         citylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -85,6 +102,7 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int positon, long id) {
                 //在这里面就是执行点击后要进行的操作,这里只是做一个显示
+                citychooseTv.setText(list.get(positon));
 
             }
         });

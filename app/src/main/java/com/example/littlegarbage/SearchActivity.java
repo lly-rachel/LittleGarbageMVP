@@ -64,7 +64,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.internal.http2.ErrorCode;
 
@@ -111,6 +113,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     SearchHistoryAdapter historyAdapter;
     List<String> garbagenameList;
 
+    /*选择地区*/
+    Map<String,Integer> city = new HashMap<>();
+    static String cityname = null;
+    static String citydaima = null;
+
     final static String hotSearchHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
     final static String imageNameURL = "https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477";
 
@@ -120,6 +127,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        Intent intent=getIntent();
+        cityname=intent.getStringExtra("city");
 
         iniDetail();
 
@@ -226,6 +236,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
         intent.putExtra("garbage",garbage);
+        intent.putExtra("citydaima",citydaima);
         startActivity(intent);
 
     }
@@ -359,6 +370,17 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);
         historyLv.setAdapter(historyAdapter);
 
+        //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
+        //垃圾分类api支持的城市
+        city.put("上海",310000);
+        city.put("宁波",330200);
+        city.put("西安",610100);
+        city.put("深圳",440300);
+        city.put("北京",110000);
+
+        if(cityname!=null){
+            citydaima = String.valueOf(city.get(cityname));
+        }
 
     }
 
@@ -788,7 +810,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             String garbageString = null;
             try {
 
-                garbageString = HttpUtil.sendOkHttpPictureRequest(imgBase);
+                garbageString = HttpUtil.sendOkHttpPictureRequest(imgBase,citydaima);
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
@@ -864,6 +886,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                             GarbageBean.ResultBean.GarbageInfoBean gib = NameList.get(i);
                             Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
                             intent.putExtra("bean", gib);
+                            intent.putExtra("citydaima",citydaima);
                            // intent.putExtra("garbage",gib.getGarbage_name());
                             startActivity(intent);
                             break;
