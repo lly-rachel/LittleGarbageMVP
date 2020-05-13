@@ -105,6 +105,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
     ImageView seachIv,soundIv,photoIv,takepictureIv;
+    ImageView shezhiIv;
     ListView historyLv;
     String garbage;
     SearchHistoryAdapter historyAdapter;
@@ -341,6 +342,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         soundIv = findViewById(R.id.search_sound);
         photoIv = findViewById(R.id.search_photo);
         takepictureIv = findViewById(R.id.search_takepicture);
+        shezhiIv = findViewById(R.id.shezhi);
         historyLv = findViewById(R.id.search_history);
         historyLv.setAdapter(historyAdapter);
 
@@ -349,6 +351,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         soundIv.setOnClickListener(this);
         photoIv.setOnClickListener(this);
         takepictureIv.setOnClickListener(this);
+        shezhiIv.setOnClickListener(this);
 
         garbagenameList = DBManeger.queryAllGarbageName();
 
@@ -363,9 +366,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
 
-
-
         switch (v.getId()){
+
+            case R.id.shezhi:
+
+                Intent intent = new Intent(this,MoreChooseActivity.class);
+                startActivity(intent);
+
+                break;
 
             case R.id.garbage_search:
 
@@ -402,7 +410,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //                /*录音，获取音频文件*/
             case R.id.search_sound:
 
-                open(this);//动态获取权限
+                Toast.makeText(this,"功能尚在开发中，敬请期待...",Toast.LENGTH_SHORT).show();
+
+ //               open(this);//动态获取权限
 
 //                if(isFirst){
 //                    soundIv.setImageResource(R.mipmap.yuyinzanting);
@@ -428,18 +438,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void startVoiceRecognitionActivity() {
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
-
-        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
-    }
+//    private void startVoiceRecognitionActivity() {
+//
+//        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//
+//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+//
+//                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+//
+//        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
+//
+//        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+//    }
 
 //    /*初始化MediaRecorder*/
 //    public void init(){
@@ -678,13 +688,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     }
 
-                case VOICE_RECOGNITION_REQUEST_CODE:
-                    ArrayList matches = data.getStringArrayListExtra(
-
-                            RecognizerIntent.EXTRA_RESULTS);
-                    seachnameATV.setText((String) matches.get(0));
-                    //移动光标至最后一个字符，使识别语音后显示联想词
-                    seachnameATV.setSelection(((String) matches.get(0)).length());
+//                case VOICE_RECOGNITION_REQUEST_CODE:
+//                    ArrayList matches = data.getStringArrayListExtra(
+//
+//                            RecognizerIntent.EXTRA_RESULTS);
+//
+//                    seachnameATV.setText((Integer) matches.get(0));
+//                    //移动光标至最后一个字符，使识别语音后显示联想词
+//                    seachnameATV.setSelection(((String) matches.get(0)).length());
 
                 default:
                     break;
@@ -755,6 +766,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         Bitmap bm = compressImage(bitmap);
 
         imgBase = bitmaptoString(bm);
+
+        Toast.makeText(this,"获取信息中...请耐心等待",Toast.LENGTH_LONG).show();
         // 启用网络线程
         HttpThreadToGetPictureName ht = new HttpThreadToGetPictureName();
         ht.start();

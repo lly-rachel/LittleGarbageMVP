@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MoreChooseActivity">
+
+
+
+    <RelativeLayout
+        android:id="@+id/shezhi_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="更多设置"
+            android:textStyle="bold"
+            android:textSize="23sp"
+            ></TextView>
+
+        <ImageView
+            android:id="@+id/surechange_Iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/sure"
+            android:layout_alignParentRight="true"
+            ></ImageView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:background="#000"
+            />
+</RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shezhi_layout"
+        android:paddingTop="10dp"
+        >
+    <TextView
+        android:id="@+id/tv_1"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="==本软件功能尚在开发中，虚心学习，听取接受广大使用者的意见和建议=="
+        android:background="#F5F5F5"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/diqu_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/stroketext"
+        >
+
+        <ImageView
+            android:id="@+id/diqu_Iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@mipmap/diqu"
+            android:layout_centerVertical="true"
+            ></ImageView>
+
+        <TextView
+            android:id="@+id/city_choose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择地区"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textSize="23sp"
+            android:layout_marginTop="20dp"
+
+            />
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

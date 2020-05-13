@@ -153,7 +153,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
                 startActivity(intent);
                 break;
 
-            //分享至微信、QQ
+            //分享
             case R.id.detail_share :
 
                 SearchActivity.open(this);//动态获取权限

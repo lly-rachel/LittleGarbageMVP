@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
    >
+
+    <RelativeLayout
+        android:id="@+id/show_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="垃圾分类搜索"
+            android:textStyle="bold"
+            android:textSize="23sp"
+            ></TextView>
+
+        <ImageView
+            android:id="@+id/shezhi"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/shezhi"
+            android:layout_alignParentRight="true"
+            ></ImageView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:background="#000"
+            />
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:id="@+id/search_top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/show_layout"
         android:padding="10dp"
         >
 
