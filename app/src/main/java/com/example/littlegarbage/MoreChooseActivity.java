@@ -85,7 +85,7 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int positon, long id) {
                 //在这里面就是执行点击后要进行的操作,这里只是做一个显示
-             //   citychooseTv.setText(list.get(positon));
+
             }
         });
 
