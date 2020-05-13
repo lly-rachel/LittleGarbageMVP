@@ -2,11 +2,19 @@ package com.example.littlegarbage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.tv.TvView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.littlegarbage.db.DBManeger;
@@ -19,7 +27,7 @@ import java.util.List;
 
 public class ShowGarbageDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
-    ImageView garbageIv,justpictureIv,sureIv;
+    ImageView garbageIv,justpictureIv,sureIv,shareIv;
     TextView justpsTv,statusTv;
     TextView garbagenametext,camenametext,citynametext,confidencetext,ps_detailtext;
     TextView garbagenameTv,camenameTv,citynameTv,confidenceTv,ps_detailTv;
@@ -117,6 +125,9 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         sureIv = findViewById(R.id.detail_sure);
         sureIv.setOnClickListener(this);
 
+        sureIv = findViewById(R.id.detail_share);
+        sureIv.setOnClickListener(this);
+
         garbagenametext=findViewById(R.id.text_garbage_name);
         camenametext=findViewById(R.id.text_came_name);
         citynametext=findViewById(R.id.text_city_name);
@@ -139,11 +150,32 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
             case R.id.detail_sure :
                 intent = new Intent(this,SearchActivity.class);
+                startActivity(intent);
+                break;
+
+            //分享至微信、QQ
+            case R.id.detail_share :
+
+                SearchActivity.open(this);//动态获取权限
+                View view = this.getWindow().getDecorView();
+
+               Bitmap bitmap = getNormalViewScreenshot(view);
+                int w = bitmap.getWidth(); // 得到图片的宽，高
+                int h = bitmap.getHeight();
+                Bitmap bp = Bitmap.createBitmap(bitmap, 0, 50, w, h-150, null, true);
+                ShotShareUtil.shotShare(this,bp);
 
                 break;
         }
 
-        startActivity(intent);
+
+    }
+
+    public static Bitmap getNormalViewScreenshot(View view) {
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
+
+        return view.getDrawingCache();
     }
 
     /*根据garbage获取具体信息*/

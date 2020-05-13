@@ -17,19 +17,24 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -47,16 +52,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import java.util.List;
+
+import okhttp3.internal.http2.ErrorCode;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -78,17 +88,21 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public static final int CHOOSE_PHOTO = 2;
 
     /*录音用*/
-    private static String[] PERMISSIONS_STORAGE = {android.Manifest.permission.READ_EXTERNAL_STORAGE,
+    private static String[] PERMISSIONS_STORAGE = {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
             android.Manifest.permission.RECORD_AUDIO};
     boolean isFirst = true;//判断是第一次点击录音，第二次点击停止录音
 
     private static int REQUEST_PERMISSION_CODE = 3;
 
-    MediaRecorder recorder;
-    File audioFile; //录音保存的文件
-    boolean isRecoding=false;// true 表示正在录音
 
+//    MediaRecorder recorder;
+//    File audioFile; //录音保存的文件
+//    boolean isRecoding=false;// true 表示正在录音
+
+
+    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
     ImageView seachIv,soundIv,photoIv,takepictureIv;
     ListView historyLv;
@@ -107,6 +121,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_search);
 
         iniDetail();
+
+
+
 
         hot_historyGv=findViewById(R.id.hot_history_Gridview);
 
@@ -170,7 +187,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         String name =jsonArray.getString("name");
                         Integer type = jsonArray.getInt("type");
                         Integer index = jsonArray.getInt("index");
-                        if(index>100&&name.length()<5&&newdata.size()<16&&!newdata.contains(name)){
+                        if(name.length()<5&&newdata.size()<16&&!newdata.contains(name)){
                             newdata.add(name);
                         }
                     }
@@ -382,29 +399,28 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
 
-                /*录音，获取音频文件*/
+//                /*录音，获取音频文件*/
             case R.id.search_sound:
 
                 open(this);//动态获取权限
 
-                if(isFirst){
-                    soundIv.setImageResource(R.mipmap.yuyinzanting);
+//                if(isFirst){
+//                    soundIv.setImageResource(R.mipmap.yuyinzanting);
 
-                    startin();
-                    isFirst=false;
-                }else{
-                    soundIv.setImageResource(R.mipmap.yuyin);
+                    //startin();
+ //                   startVoiceRecognitionActivity();//Google Voice Recognition
 
-
-                    stopin();
-                    HttpThreadToGetSoundName getsoundName = new HttpThreadToGetSoundName();
-                    getsoundName.start();
-
-                    isFirst=true;
-                }
-
-
-
+//                    isFirst=false;
+//                }else{
+//                    soundIv.setImageResource(R.mipmap.yuyin);
+//
+//
+////                    stopin();
+////                    HttpThreadToGetSoundName getsoundName = new HttpThreadToGetSoundName();
+////                    getsoundName.start();
+//
+//                    isFirst=true;
+//                }
 
 
                 break;
@@ -412,140 +428,161 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    /*初始化MediaRecorder*/
-    public void init(){
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置播放源 麦克风
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); //设置输入格式 3gp
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //设置编码 AMR
+    private void startVoiceRecognitionActivity() {
 
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
+
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
 
-    /*实现录音功能*/
-    public void recod(){
-        //这里为文件保存路径
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/MediaRecorderTest");
-        init();
-        if(!path.exists())
-        {
-            path.mkdirs();
-        }
-
-        try {
-            //这个地方写文件名，可以利用时间来保存为不同的文件名
-            audioFile=new File(path,"test.mp3");
-            if(audioFile.exists())
-            {
-                audioFile.delete();
-            }
-            audioFile.createNewFile();//创建文件
-
-        } catch (Exception e) {
-            throw new RuntimeException("Couldn't create recording audio file", e);
-        }
-
-        recorder.setOutputFile(audioFile.getAbsolutePath());
-
-        try {
-            recorder.prepare();
-        } catch (IllegalStateException e) {
-            throw new RuntimeException("IllegalStateException on MediaRecorder.prepare", e);
-        } catch (IOException e) {
-            throw new RuntimeException("IOException on MediaRecorder.prepare", e);
-        }
-        isRecoding=true;
-        recorder.start();
-    }
-
-    /*开始录音*/
-    public void startin(){
-        Toast.makeText(this,"开始录音",Toast.LENGTH_SHORT).show();
-        recod();
-    }
-
-    /*停止录音*/
-    public void stopin(){
-        if(isRecoding)
-        {
-            Toast.makeText(this,"停止录音",Toast.LENGTH_SHORT).show();
-            if (recorder != null){
-                try {
-                    recorder.stop();
-                } catch (IllegalStateException e) {
-
-                    //e.printStackTrace();
-                    recorder = null;
-                    recorder = new MediaRecorder();
-                }
-                recorder.release();
-                recorder = null;
-                Toast.makeText(this,"正在获取数据..耐心等待",Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    /*网络请求，获取语音识别的数据*/
-    public class HttpThreadToGetSoundName extends Thread{
-
-        @Override
-        public void run() {
-            super.run();
-
-            GarbageBean garbageBean = null;
-            JsonParser jp = new JsonParser();
-
-            // 城市代码
-            String garbageString = null;
-            try {
-
-                String model = android.os.Build.MODEL;
-                String version_release = android.os.Build.VERSION.RELEASE;
-                Integer packagecode = packageCode(getApplicationContext());
-
-                garbageString = HttpUtil.sendOkHttpSoundRequest(audioFile,model,version_release,packagecode);
-
-            } catch (JSONException | MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            if (garbageString == null) {
-                garbageString="数据获取错误";
-
-            }else{
-
-                // 多线程更新 UI
-                final String finalGarbageString = garbageString;
-                hd.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        getTheGarbageMessage(finalGarbageString);
-                    }
-                });
-
-            }
-
-
-
-
-        }
-    }
-
-    /*获取客户端版本号*/
-    public static int packageCode(Context context) {
-        PackageManager manager = context.getPackageManager();
-        int code = 0;
-        try {
-            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            code = info.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return code;
-    }
+//    /*初始化MediaRecorder*/
+//    public void init(){
+//
+//        recorder = new MediaRecorder();
+//        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置播放源 麦克风
+//        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); //设置输入格式 3gp
+//        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //设置编码 AMR
+//
+//
+//
+//    }
+//
+//    /*实现录音功能*/
+//    public void recod(){
+//        //这里为文件保存路径
+//        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/MediaRecorderTest");
+//        init();
+//        if(!path.exists())
+//        {
+//            path.mkdirs();
+//        }
+//
+//        try {
+//            //这个地方写文件名，可以利用时间来保存为不同的文件名
+//            audioFile=new File(path,"test.mp3");
+//            if(audioFile.exists())
+//            {
+//                audioFile.delete();
+//            }
+//            audioFile.createNewFile();//创建文件
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Couldn't create recording audio file", e);
+//        }
+//
+//        recorder.setAudioSamplingRate(16000);//音频采样率
+//        recorder.setMaxDuration(60*1000);
+//        recorder.setAudioChannels(1);
+//        recorder.setOutputFile(audioFile.getAbsolutePath());
+//
+//        try {
+//            recorder.prepare();
+//        } catch (IllegalStateException e) {
+//            throw new RuntimeException("IllegalStateException on MediaRecorder.prepare", e);
+//        } catch (IOException e) {
+//            throw new RuntimeException("IOException on MediaRecorder.prepare", e);
+//        }
+//        isRecoding=true;
+//        recorder.start();
+//    }
+//
+//    /*开始录音*/
+//    public void startin(){
+//        Toast.makeText(this,"开始录音",Toast.LENGTH_SHORT).show();
+//        recod();
+//    }
+//
+//    /*停止录音*/
+//    public void stopin(){
+//        if(isRecoding)
+//        {
+//            Toast.makeText(this,"停止录音",Toast.LENGTH_SHORT).show();
+//            if (recorder != null){
+//                try {
+//
+//                    recorder.stop();
+//                } catch (IllegalStateException e) {
+//
+//                    //e.printStackTrace();
+//                    recorder = null;
+//                    recorder = new MediaRecorder();
+//                }
+//                recorder.release();
+//                recorder = null;
+//                Toast.makeText(this,"正在获取数据..耐心等待",Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
+//
+//
+//    /*网络请求，获取语音识别的数据*/
+//    public class HttpThreadToGetSoundName extends Thread{
+//
+//        @Override
+//        public void run() {
+//            super.run();
+//
+//            GarbageBean garbageBean = null;
+//            JsonParser jp = new JsonParser();
+//
+//            // 城市代码
+//            String garbageString = null;
+//            try {
+//
+//                String model = android.os.Build.MODEL;
+//                String version_release = android.os.Build.VERSION.RELEASE;
+//                Integer packagecode = packageCode(SearchActivity.this);
+//
+//                garbageString = HttpUtil.sendOkHttpSoundRequest(audioFile,model,version_release,packagecode);
+//
+//            } catch (JSONException | MalformedURLException e) {
+//                e.printStackTrace();
+//            }
+//
+//            if (garbageString == null) {
+//                garbageString="数据获取错误";
+//
+//            }else{
+//
+//                // 多线程更新 UI
+//                final String finalGarbageString = garbageString;
+//                hd.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        getTheGarbageMessage(finalGarbageString);
+//                    }
+//                });
+//
+//            }
+//
+//
+//
+//
+//        }
+//    }
+//
+//    /*获取客户端版本号*/
+//    public static int packageCode(Context context) {
+//        PackageManager manager = context.getPackageManager();
+//        int code = 0;
+//        try {
+//            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+//            code = info.versionCode;
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return code;
+//    }
 
     /*动态获取权限*/
-    public void open(Activity obj){
+    public static void open(Activity obj){
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             for (int i = 0 ; i < PERMISSIONS_STORAGE.length ; i++){
                 if (ActivityCompat.checkSelfPermission(obj,
@@ -640,6 +677,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                             handleImageBeforeKitKat(data);
                         }
                     }
+
+                case VOICE_RECOGNITION_REQUEST_CODE:
+                    ArrayList matches = data.getStringArrayListExtra(
+
+                            RecognizerIntent.EXTRA_RESULTS);
+                    seachnameATV.setText((String) matches.get(0));
+                    //移动光标至最后一个字符，使识别语音后显示联想词
+                    seachnameATV.setSelection(((String) matches.get(0)).length());
+
                 default:
                     break;
             }

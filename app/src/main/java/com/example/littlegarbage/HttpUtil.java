@@ -4,6 +4,7 @@ package com.example.littlegarbage;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -125,9 +126,6 @@ public class HttpUtil {
 
     public static String sendOkHttpSoundRequest(File file,String model,String VERSION,Integer packagecode) throws JSONException, MalformedURLException {
 
-        File soundFile = new File("/storage/emulated/0/MediaRecorderTest/test.mp3");
-
-
         JSONObject jsonEncode = new JSONObject();
         jsonEncode.put("channel",1);//int类型，⾳频声道数，目前只⽀持单声道，填1
         jsonEncode.put("format","mp3");//string类型，⾳频格式，支持wav， amr，mp3
@@ -139,63 +137,53 @@ public class HttpUtil {
         jsonProperty.put("autoend",false);
         jsonProperty.put("encode",jsonEncode);
         jsonProperty.put("platform","Android&"+model+"&"+VERSION);//{平台}&{机型}&{系统版本号}
-        jsonProperty.put("version","0.0.0.1");//客户端版本号
+        jsonProperty.put("version",String.valueOf(packagecode));//客户端版本号
 
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(7000, TimeUnit.SECONDS)
-                .writeTimeout(7000, TimeUnit.SECONDS)
-                .readTimeout(7000, TimeUnit.SECONDS)
-                .build();
-
-
-        String url1 = "https://aiapi.jd.com/jdai/garbageVoiceSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
+        String url1 = "https://aiapi.jd.com/jdai/garbageVoiceSearch?";
+        String appkey = "appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
         String s1 = GetMD5.md5("1a8c89772abf812630f6687255d22a3b" + time);
-        String urls = url1 + time + "&sign=" + s1;
+        String urls = url1+appkey + time + "&sign=" + s1;
 
         URL url = new URL(urls);
 
+        MediaType parse = MediaType.parse("application/octet-stream");//application/octet-stream
+        if (file !=null) {
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(7000, TimeUnit.SECONDS)
+                .writeTimeout(7000, TimeUnit.SECONDS)
+                .readTimeout(7000, TimeUnit.SECONDS)
+                    .build();
+
+            RequestBody requestBody = RequestBody.create(parse,file);
+            MultipartBody build = new MultipartBody.Builder()
+                    .addFormDataPart("file", file.getName(), requestBody)
+                    .setType(MultipartBody.FORM)
+                    .build();
 
 
-//        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/mp3"),soundFile);    //创建requestBody对象
-//        MultipartBody multipartBody = new MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("file", soundFile.getName(), requestBody)
-//                .build();
-
-//        RequestBody requestBody = RequestBody.create(soundFile,MediaType.parse("audio/mp3"));
-//
-//        Request request = new Request.Builder()
-//                .url(url)
-// //               .addHeader("cityId", String.valueOf(310000))
-//                .addHeader("property", String.valueOf(jsonProperty))
-//                .post(requestBody)
-//                .build();
-
-        RequestBody body = RequestBody.create(MediaType.parse("mp3"), soundFile);
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("cityId",String.valueOf(310000))
-                .addHeader("property", String.valueOf(jsonProperty))
-                .post(body)
-                .build();
+            Request request =new Request.Builder()
+                    .url(url)
+                    .addHeader("cityId", String.valueOf(310000))
+                    .addHeader("property", String.valueOf(jsonProperty))
+                    .post(build)
+                    .build();
 
 
-
-
-        Response response = null;
+            Response response = null;
             try {
-            response = okHttpClient.newCall(request).execute();
-            if (response.code()==200) {
-            String message=response.body().string();
-            return message;
-            } else {
+                response = okHttpClient.newCall(request).execute();
+                if (response.code()==200) {
+                    String message=response.body().string();
+                    return message;
+                } else {
 
-                throw new IOException("Unexpected code " + response);
+                    throw new IOException("Unexpected code " + response);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return null;

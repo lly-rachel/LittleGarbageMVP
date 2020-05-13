@@ -58,6 +58,8 @@
             android:layout_weight="1"
             />
 
+
+
         <ImageView
             android:id="@+id/search_takepicture"
             android:layout_width="50dp"
@@ -120,7 +122,6 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:paddingBottom="5dp"
-        android:paddingTop="5dp"
         android:layout_below="@+id/hot_history_layout"
         >
 
