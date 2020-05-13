@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,11 +21,12 @@ import java.util.List;
 public class MoreChooseActivity extends AppCompatActivity implements View.OnClickListener {
 
     ImageView surechooseIv;
-    RelativeLayout diqu_layout;
+    TextView citychooseTv;
+    ListView citylist;
+
+    String city;
 
     private List<String> list = new ArrayList<String>();
-    private AlertDialog.Builder builder;
-    private AlertDialog alertDialog;
 
 
     @Override
@@ -33,10 +35,11 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_more_choose);
 
         surechooseIv= findViewById(R.id.surechange_Iv);
-        diqu_layout = findViewById(R.id.diqu_layout);
+        citychooseTv=findViewById(R.id.city_choose);
+        citylist = findViewById(R.id.listview);
 
         surechooseIv.setOnClickListener(this);
-        diqu_layout.setOnClickListener(this);
+        citychooseTv.setOnClickListener(this);
 
     }
 
@@ -51,13 +54,8 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
                 break;
 
 
-            case R.id.diqu_layout:
-            //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
-                list.add("上海");
-                list.add("宁波");
-                list.add("西安");
-                list.add("深圳");
-                list.add("北京");
+            case R.id.city_choose:
+
                 ShowDialog();//弹框操作
 
                 break;
@@ -70,25 +68,27 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
     public void ShowDialog() {
 
-        Context context = this;
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout., null);
-        ListView myListView = (ListView) layout.findViewById(R.id.listview);
+        //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
+        list.add("上海");
+        list.add("宁波");
+        list.add("西安");
+        list.add("深圳");
+        list.add("北京");
+
+
         CityAdapter adapter = new CityAdapter(list,this);
-        myListView.setAdapter(adapter);
-        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        adapter.notifyDataSetChanged();
+        citylist.setAdapter(adapter);
+        citylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int positon, long id) {
                 //在这里面就是执行点击后要进行的操作,这里只是做一个显示
-                if (alertDialog != null) {
-                    alertDialog.dismiss();
-                }
+             //   citychooseTv.setText(list.get(positon));
             }
         });
-        builder = new AlertDialog.Builder(context);
-        builder.setView(layout);
-        alertDialog = builder.create();
-        alertDialog.show();
+
+
     }
 }

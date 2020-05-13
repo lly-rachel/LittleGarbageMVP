@@ -5,7 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.littlegarbage.db.DBManeger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +18,9 @@ public class CityAdapter extends BaseAdapter {
 
     private List<String> mlist;
     private Context mContext;
+    public static String getcity;
 
     public CityAdapter(List<String> mlist, Context mContext) {
-        mlist = new ArrayList<String>();
         this.mlist = mlist;
         this.mContext = mContext;
     }
@@ -38,22 +42,37 @@ public class CityAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        City city = null;
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(mContext);
-            convertView = inflater.inflate(R.layout.support_simple_spinner_dropdown_item,null);
-            city = new City();
-            city.name = convertView.findViewById(R.id.city_choose);
-            convertView.setTag(city);
+
+        final CityViewHolder holder;
+        if(convertView==null){
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.city_item,null);
+            holder = new CityViewHolder(convertView);
+            convertView.setTag(holder);
         }else{
-            city = (City) convertView.getTag();
+            holder= (CityViewHolder) convertView.getTag();
         }
-        city.name.setText(mlist.get(position));
+        final String name = mlist.get(position);
+        holder.citynameTv.setText(name);
+
+        holder.citynameTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getcity = holder.citynameTv.toString();
+            }
+        });
+
         return convertView;
     }
 
-    class City{
-        TextView name;
+    class CityViewHolder  {
+
+        TextView citynameTv;
+
+        public CityViewHolder(View itemView){
+            citynameTv=itemView.findViewById(R.id.citytext);
+
+        }
     }
 
 }
