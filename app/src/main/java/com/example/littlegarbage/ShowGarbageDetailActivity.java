@@ -48,7 +48,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         Intent intent=getIntent();
         garbage=intent.getStringExtra("garbage");
         garbageInfoBean = (GarbageBean.ResultBean.GarbageInfoBean) intent.getSerializableExtra("bean");
-        citydaima = intent.getStringExtra("citydaima");
+        citydaima = intent.getStringExtra("citydaima");//得到的城市代码
 
         iniView();
         if(garbage!=null){
