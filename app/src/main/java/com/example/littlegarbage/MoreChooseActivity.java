@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.Set;
 public class MoreChooseActivity extends AppCompatActivity implements View.OnClickListener {
 
     ImageView surechooseIv;
-    TextView citychooseTv;
+    TextView citychooseTv,deleteTv;
     ListView citylist;
 
     boolean isFirst = true;
@@ -38,12 +40,13 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
         surechooseIv= findViewById(R.id.surechange_Iv);
         citychooseTv=findViewById(R.id.city_choose);
+        deleteTv = findViewById(R.id.delete_text);
         citylist = findViewById(R.id.listview);
 
 
         surechooseIv.setOnClickListener(this);
         citychooseTv.setOnClickListener(this);
-
+        deleteTv.setOnClickListener(this);
     }
 
     @Override
@@ -71,10 +74,39 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
                 break;
 
+            case R.id.delete_text:
+
+
+                deleteFile();//删除文件
+
+
+
+                break;
 
         }
 
 
+
+
+    }
+
+
+    public void deleteFile() {
+
+        File file = new File(Environment.getExternalStorageDirectory()+ "/MediaRecorderTest"+"/test.amr");
+        if (file.exists()) {
+            file.delete();
+        }
+
+
+        File picture = new File(Environment.getExternalStorageDirectory() + "/BitmapTest"+"/share.png");
+        if (picture.exists()) {
+            picture.delete();
+        }
+
+        if(!file.exists()&&!picture.exists()){
+            Toast.makeText(this,"已清理所有数据文件",Toast.LENGTH_SHORT).show();
+        }
 
 
     }

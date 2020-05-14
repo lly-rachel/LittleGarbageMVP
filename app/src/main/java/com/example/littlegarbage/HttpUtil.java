@@ -132,11 +132,15 @@ public class HttpUtil {
     }
 
 
-    public static String sendOkHttpSoundRequest(File file,String model,String VERSION,Integer packagecode) throws JSONException, MalformedURLException {
+    public static String sendOkHttpSoundRequest(File file,String model,String VERSION,Integer packagecode,String citydaima) throws JSONException, MalformedURLException {
+
+        if(citydaima==null){
+            citydaima=String.valueOf(310000);
+        }
 
         JSONObject jsonEncode = new JSONObject();
         jsonEncode.put("channel",1);//int类型，⾳频声道数，目前只⽀持单声道，填1
-        jsonEncode.put("format","mp3");//string类型，⾳频格式，支持wav， amr，mp3
+        jsonEncode.put("format","amr");//string类型，⾳频格式，支持wav， amr，mp3
         jsonEncode.put("sample_rate",16000);//int类型，采样率，目前只⽀持填写16000
         jsonEncode.put("post_process",0);//int类型，数字后处理:1为强制开启(开启后，会把结果中的数字汉字转换成阿拉伯数字。例如，识别结果中的“一千”会 转成“1000”)，0为根据服务端配置是否进行数字后处理
 
@@ -173,7 +177,7 @@ public class HttpUtil {
 
             Request request =new Request.Builder()
                     .url(url)
-                    .addHeader("cityId", String.valueOf(310000))
+                    .addHeader("cityId", citydaima)
                     .addHeader("property", String.valueOf(jsonProperty))
                     .post(build)
                     .build();
