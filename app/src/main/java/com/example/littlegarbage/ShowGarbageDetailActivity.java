@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +16,10 @@ import com.example.littlegarbage.db.DBManeger;
 
 import org.json.JSONException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -34,6 +40,10 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_garbage_detail);
+
+        DBManeger.initDB(this);
+
+        SearchActivity.open(ShowGarbageDetailActivity.this);
 
         Intent intent=getIntent();
         garbage=intent.getStringExtra("garbage");
@@ -68,10 +78,14 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         citynameTv.setText(garbageInfoBean.getCity_name());
         confidenceTv.setText(doubleToString(garbageInfoBean.getConfidence()));
         ps_detailTv.setText(garbageInfoBean.getPs());
-        statusTv.setText("获取数据成功");
+        statusTv.setText("--获取数据成功--");
         justpsTv.setText("注意：识别置信度，可以用来衡量识别结果，该值越大越好，建议采用值为0.7以上的结果");
 
         switch (garbageInfoBean.getCate_name()){
+
+            case "厨余垃圾":
+                garbageIv.setImageResource(R.mipmap.chuyulaji);
+                break;
 
             case "湿垃圾":
                 garbageIv.setImageResource(R.mipmap.shilaji);
@@ -151,14 +165,34 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
             //分享
             case R.id.detail_share :
 
-                SearchActivity.open(this);//动态获取权限
-                View view = this.getWindow().getDecorView();
+//                View view = this.getWindow().getDecorView();
+//
+//                Bitmap bitmap = getNormalViewScreenshot(view);
+//                int w = bitmap.getWidth(); // 得到图片的宽，高
+//                int h = bitmap.getHeight();
+////                Bitmap bp = Bitmap.createBitmap(bitmap, 0, 50, w, h, null, true);
+//                ShotShareUtil.shotShare(this,bitmap);
 
-               Bitmap bitmap = getNormalViewScreenshot(view);
-                int w = bitmap.getWidth(); // 得到图片的宽，高
-                int h = bitmap.getHeight();
-                Bitmap bp = Bitmap.createBitmap(bitmap, 0, 50, w, h-150, null, true);
-                ShotShareUtil.shotShare(this,bp);
+                // View是你需要截图的View
+                View view = this.getWindow().getDecorView();
+                view.setDrawingCacheEnabled(true);
+                view.buildDrawingCache();
+                Bitmap b1 = view.getDrawingCache();
+
+                // 获取状态栏高度
+                Rect frame = new Rect();
+                this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+                int statusBarHeight = frame.top;
+
+                // 获取屏幕长和高
+                int width = this.getWindowManager().getDefaultDisplay().getWidth();
+                int height = this.getWindowManager().getDefaultDisplay().getHeight();
+                // 去掉标题栏
+                Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
+                        - statusBarHeight);
+                view.destroyDrawingCache();
+
+                ShotShareUtil.shotShare(this,b);
 
                 break;
         }
@@ -166,12 +200,6 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
     }
 
-    public static Bitmap getNormalViewScreenshot(View view) {
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache();
-
-        return view.getDrawingCache();
-    }
 
     /*根据garbage获取具体信息*/
     public class HttpThread extends Thread {

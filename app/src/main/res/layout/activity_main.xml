@@ -12,7 +12,7 @@
         android:layout_above="@+id/earth"
         android:text="Little Garbage"
         android:layout_centerHorizontal="true"
-        android:textSize="50sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         android:textColor="#696969"
         />

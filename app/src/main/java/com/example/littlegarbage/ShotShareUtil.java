@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -11,6 +12,8 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -67,11 +70,26 @@ public class ShotShareUtil {
     /**分享**/
     private static void ShareImage(Context context,String imagePath){
         if (imagePath != null){
-            Intent intent = new Intent(Intent.ACTION_SEND); // 启动分享发送的属性
+
+            Uri uri;
+
             File file = new File(imagePath);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));// 分享的内容
+
+            if (context == null || file == null) {
+                throw new NullPointerException();
+            }
+            if(Build.VERSION.SDK_INT>=24){
+                uri = FileProvider.getUriForFile
+                        (context,"com.example.littlegarbage.fileprovider",file);
+            }else{
+                uri = Uri.fromFile(file);
+            }
+
+            Intent intent = new Intent(Intent.ACTION_SEND); // 启动分享发送的属性
+
+            intent.putExtra(Intent.EXTRA_STREAM, uri);// 分享的内容
             intent.setType("image/*");// 分享发送的数据类型
-            Intent chooser = Intent.createChooser(intent, "Share screen shot");
+            Intent chooser = Intent.createChooser(intent, "分享到：");
             if(intent.resolveActivity(context.getPackageManager()) != null){
                 context.startActivity(chooser);
             }

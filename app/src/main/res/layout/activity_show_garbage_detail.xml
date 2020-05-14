@@ -50,19 +50,45 @@
         android:background="@drawable/stroketext"
         >
 
+        <RelativeLayout
+            android:id="@+id/text_status_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+
+            >
         <TextView
             android:id="@+id/text_status"
             style="@style/garbage_detailtext"
             android:text="获取数据中....耐心等待..."
+            android:textStyle="italic"
             android:layout_centerHorizontal="true"
             />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_status_layout"
+            android:orientation="vertical"
+            android:padding="5dp"
+            >
 
         <TextView
             android:id="@+id/text_garbage_name"
             style="@style/garbage_detailtext"
             android:text="垃圾名称："
-            android:layout_below="@+id/text_status"
+
             />
+        <TextView
+            android:id="@+id/garbage_name"
+            style="@style/garbagedetail"
+            android:text=""
+            android:layout_toRightOf="@+id/text_garbage_name"
+            />
+
+
         <TextView
             android:id="@+id/text_came_name"
             style="@style/garbage_detailtext"
@@ -70,11 +96,27 @@
             android:layout_below="@+id/text_garbage_name"
             />
         <TextView
+            android:id="@+id/came_name"
+            style="@style/garbagedetail"
+            android:text=""
+            android:layout_toRightOf="@+id/text_came_name"
+            android:layout_below="@+id/text_garbage_name"
+            />
+
+        <TextView
             android:id="@+id/text_city_name"
             style="@style/garbage_detailtext"
             android:text="城市："
             android:layout_below="@+id/text_came_name"
             />
+        <TextView
+            android:id="@+id/city_name"
+            style="@style/garbagedetail"
+            android:text=""
+            android:layout_toRightOf="@+id/text_city_name"
+            android:layout_below="@+id/text_came_name"
+            />
+
         <TextView
             android:id="@+id/text_confidence"
             style="@style/garbage_detailtext"
@@ -82,53 +124,26 @@
             android:layout_below="@+id/text_city_name"
             />
         <TextView
+            android:id="@+id/confidence"
+            style="@style/garbagedetail"
+            android:text=""
+            android:layout_toRightOf="@+id/text_confidence"
+            android:layout_below="@+id/text_city_name"
+            />
+
+        <TextView
             android:id="@+id/text_ps_detail"
             style="@style/garbage_detailtext"
             android:text="具体信息："
             android:layout_below="@+id/text_confidence"
             />
-
-
-        /*具体显示信息*/
-        <TextView
-            android:id="@+id/garbage_name"
-            style="@style/garbagedetail"
-            android:text=""
-            android:layout_toRightOf="@+id/text_garbage_name"
-            android:layout_below="@+id/text_status"
-            />
-
-        <TextView
-            android:id="@+id/came_name"
-            style="@style/garbagedetail"
-            android:text=""
-            android:layout_toRightOf="@+id/text_came_name"
-            android:layout_below="@+id/garbage_name"
-            />
-
-        <TextView
-            android:id="@+id/city_name"
-            style="@style/garbagedetail"
-            android:text=""
-            android:layout_toRightOf="@+id/text_city_name"
-            android:layout_below="@+id/came_name"
-            />
-
-        <TextView
-            android:id="@+id/confidence"
-            style="@style/garbagedetail"
-            android:text=""
-            android:layout_toRightOf="@+id/text_confidence"
-            android:layout_below="@+id/city_name"
-            />
-
         <TextView
             android:id="@+id/ps_detail"
             style="@style/garbagedetail"
             android:text=""
             android:layout_below="@+id/text_ps_detail"
             />
-
+        </RelativeLayout>
 
     </RelativeLayout>
 

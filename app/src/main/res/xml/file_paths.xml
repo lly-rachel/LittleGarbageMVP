@@ -1,7 +1,17 @@
 <?xml version = "1.0" encoding="utf-8"?>
 <paths xmlns:android = "http://schemas.android.com/apk/res/android">
+
+    <external-path path="/BitmapTest/share.png" name="my_images" />
+    <external-path path="/MediaRecorderTest" name="my_images" />
+
+    //代表的目录即为：Environment.getExternalStorageDirectory()
     <external-path
-        path=""
-        name="my_images"
-         />
+        name="external_storage_root"
+        path="." />
+
+    //代表的目录即为：Environment.getExternalStorageDirectory()/pics
+    <external-path
+        name="external"
+        path="pics" />
+
 </paths>
