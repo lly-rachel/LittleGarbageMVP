@@ -1,12 +1,10 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.json;
 
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 

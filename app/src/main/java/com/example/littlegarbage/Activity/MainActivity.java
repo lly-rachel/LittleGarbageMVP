@@ -1,4 +1,4 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,10 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.littlegarbage.R;
 import com.example.littlegarbage.db.DBManeger;
 
 import java.util.Timer;
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 //从闪屏界面跳转到首界面
-                Intent intent = new Intent(MainActivity.this,SearchActivity.class);
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -72,21 +71,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        Intent intent;
-
         switch (v.getId()){
 
             case R.id.main_search:
-                intent=new Intent(this,SearchActivity.class);
+                Intent intent=new Intent(this,SearchActivity.class);
                 if (runnable != null) {
                     handler.removeCallbacks(runnable);
                 }
+                startActivity(intent);
                 break;
 
-            default:
-                throw new IllegalStateException("Unexpected value: " + v.getId());
         }
 
-        startActivity(intent);
     }
 }

@@ -1,26 +1,23 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.Activity;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.littlegarbage.Adapter.CityAdapter;
+import com.example.littlegarbage.R;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MoreChooseActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -56,7 +53,7 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
             case R.id.surechange_Iv:
 
-                Intent intent = new Intent(this,SearchActivity.class);
+                Intent intent = new Intent(this, SearchActivity.class);
 
                 if(citychooseTv.getText().equals("选择地区")){
 
@@ -93,18 +90,29 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
     public void deleteFile() {
 
-        File file = new File(Environment.getExternalStorageDirectory()+ "/MediaRecorderTest"+"/test.amr");
+        File file = new File(Environment.getExternalStorageDirectory()+ "/BitmapTest"+"/test.amr");
         if (file.exists()) {
             file.delete();
         }
 
 
-        File picture = new File(Environment.getExternalStorageDirectory() + "/BitmapTest"+"/share.png");
+        File share_picture = new File(Environment.getExternalStorageDirectory() + "/BitmapTest"+"/share.png");
+        if (share_picture.exists()) {
+            share_picture.delete();
+        }
+
+        File picture = new File(Environment.getExternalStorageDirectory() + "/BitmapTest"+"/output_image.png");
         if (picture.exists()) {
             picture.delete();
         }
 
-        if(!file.exists()&&!picture.exists()){
+        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/BitmapTest");
+        if(path.exists())
+        {
+            path.delete();
+        }
+
+        if(!file.exists()&&!picture.exists()&&!share_picture.exists()&&!path.exists()){
             Toast.makeText(this,"已清理所有数据文件",Toast.LENGTH_SHORT).show();
         }
 

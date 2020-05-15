@@ -1,4 +1,4 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,15 +17,12 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
@@ -34,7 +31,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -46,19 +42,22 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.littlegarbage.json.GarbageBean;
+import com.example.littlegarbage.Util.GetHttpData;
+import com.example.littlegarbage.Util.HttpUtil;
+import com.example.littlegarbage.json.JsonParser;
+import com.example.littlegarbage.R;
+import com.example.littlegarbage.Adapter.SearchHistoryAdapter;
 import com.example.littlegarbage.db.DBManeger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -67,8 +66,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import okhttp3.internal.http2.ErrorCode;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -234,7 +231,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     /*根据传进garbage到展示界面*/
     private void getTheGarbageMessageToIntent(String garbage) {
 
-        Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
+        Intent intent = new Intent(this, ShowGarbageDetailActivity.class);
         intent.putExtra("garbage",garbage);
         intent.putExtra("citydaima",citydaima);
         startActivity(intent);
@@ -392,7 +389,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.shezhi:
 
-                Intent intent = new Intent(this,MoreChooseActivity.class);
+                Intent intent = new Intent(this, MoreChooseActivity.class);
                 startActivity(intent);
 
                 break;
@@ -497,7 +494,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         //这里为文件保存路径
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/MediaRecorderTest");
+        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/BitmapTest");
         init();
         if(!path.exists())
         {
@@ -580,7 +577,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 String version_release = android.os.Build.VERSION.RELEASE;
                 Integer packagecode = packageCode(SearchActivity.this);
 
-                garbageString = HttpUtil.sendOkHttpSoundRequest(audioFile,model,version_release,packagecode,citydaima);
+                garbageString = HttpUtil.sendOkHttpSoundRequest(SearchActivity.this,audioFile,model,version_release,packagecode,citydaima);
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
@@ -661,12 +658,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private void startTakePicture() {
 
         /*创建File对象，存储拍照后的图片*/
-        File outputImage = new File(getExternalCacheDir(),"output_image.jpg");
-        if(outputImage.exists()){
+        String sdCardDir = Environment.getExternalStorageDirectory() + "/BitmapTest";
+        File dirFile = new File(sdCardDir);  //目录转化成文件夹
+        if (!dirFile.exists()) {              //如果不存在，那就建立这个文件夹
+            dirFile.mkdirs();
+        }
+        File outputImage = new File(sdCardDir, "output_image.png");
+        if(outputImage.exists())
+        {
             outputImage.delete();
         }
         try {
-            outputImage.createNewFile();
+            outputImage.createNewFile();//创建文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -696,8 +699,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         try {
                             Bitmap bitmap = BitmapFactory.decodeStream
                                     (getContentResolver().openInputStream(imageUri));
-                            //                       Bitmap bitmapCompress = compressImage(bitmap);
-                            //                       String imgbase = bitmaptoString(bitmap);
 
                             getThePictureName(bitmap);
 
@@ -782,9 +783,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private void displayImage(String imagePath) {
         if(imagePath!=null){
             Bitmap bitmap =BitmapFactory.decodeFile(imagePath);
-//            Bitmap bitmapCompress = compressImage(bitmap);
-//            String imgbase = bitmaptoString(bitmap);
-
             getThePictureName(bitmap);
 
         }else{
@@ -914,111 +912,60 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public static Bitmap compressScale(Bitmap image) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
         // 判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
-
         if (baos.toByteArray().length / 1024 > 1024) {
-
             baos.reset();// 重置baos即清空baos
-
             image.compress(Bitmap.CompressFormat.JPEG, 80, baos);// 这里压缩50%，把压缩后的数据存放到baos中
-
         }
 
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
-
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
-
         // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
-
         newOpts.inJustDecodeBounds = true;
-
         Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-
         newOpts.inJustDecodeBounds = false;
-
         int w = newOpts.outWidth;
-
         int h = newOpts.outHeight;
-
-
         // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
 
-        // float hh = 800f;// 这里设置高度为800f
-
-        // float ww = 480f;// 这里设置宽度为480f
-
         float hh = 512f;
-
         float ww = 512f;
 
         // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-
         int be = 1;// be=1表示不缩放
-
         if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
-
             be = (int) (newOpts.outWidth / ww);
-
         } else if (w < h && h > hh) { // 如果高度高的话根据高度固定大小缩放
-
             be = (int) (newOpts.outHeight / hh);
-
         }
 
         if (be <= 0)
-
             be = 1;
-
         newOpts.inSampleSize = be; // 设置缩放比例
-
-        // newOpts.inPreferredConfig = Config.RGB_565;//降低图片从ARGB888到RGB565
-
         // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
 
         isBm = new ByteArrayInputStream(baos.toByteArray());
-
         bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-
         return compressImage(bitmap);// 压缩好比例大小后再进行质量压缩
-
     }
 
 
-    /**
-
-     * 质量压缩方法
-
-     * @param image
-
-     * @return
-
-     */
-
+    /*质量压缩*/
     public static Bitmap compressImage(Bitmap image) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-
         int options = 90;
 
-        while (baos.toByteArray().length / 1024 > 700) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
-
+        while (baos.toByteArray().length / 1024 > 700) { // 循环判断如果压缩后图片是否大于700kb,大于继续压缩
             baos.reset(); // 重置baos即清空baos
-
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-
             options -= 10;// 每次都减少10
-
         }
 
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
-
         Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
-
         return bitmap;
 
     }

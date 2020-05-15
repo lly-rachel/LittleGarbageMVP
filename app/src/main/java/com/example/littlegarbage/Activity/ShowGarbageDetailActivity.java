@@ -1,4 +1,4 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,20 +6,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.littlegarbage.json.GarbageBean;
+import com.example.littlegarbage.Util.HttpUtil;
+import com.example.littlegarbage.json.JsonParser;
+import com.example.littlegarbage.R;
+import com.example.littlegarbage.Util.ShotShareUtil;
 import com.example.littlegarbage.db.DBManeger;
 
 import org.json.JSONException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.List;

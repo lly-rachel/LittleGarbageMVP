@@ -1,4 +1,4 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.littlegarbage.R;
 import com.example.littlegarbage.db.DBManeger;
 
 import java.util.List;

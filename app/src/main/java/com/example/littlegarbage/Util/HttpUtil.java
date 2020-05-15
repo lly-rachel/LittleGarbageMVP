@@ -1,14 +1,14 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.Util;
 
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Environment;
+import android.net.Uri;
+import android.os.Build;
+
+import androidx.core.content.FileProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.FormBody;
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -132,7 +130,17 @@ public class HttpUtil {
     }
 
 
-    public static String sendOkHttpSoundRequest(File file,String model,String VERSION,Integer packagecode,String citydaima) throws JSONException, MalformedURLException {
+    public static String sendOkHttpSoundRequest(Context context,File file,String model,String VERSION,Integer packagecode,String citydaima) throws JSONException, MalformedURLException {
+
+        Uri uri;
+        if(Build.VERSION.SDK_INT>=24){
+            uri = FileProvider.getUriForFile
+                    (context,"com.example.littlegarbage.fileprovider",file);
+        }else{
+            uri = Uri.fromFile(file);
+        }
+
+        File soundfile = new File(String.valueOf(uri));
 
         if(citydaima==null){
             citydaima=String.valueOf(310000);

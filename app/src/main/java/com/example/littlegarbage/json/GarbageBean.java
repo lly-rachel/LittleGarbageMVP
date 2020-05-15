@@ -1,4 +1,4 @@
-package com.example.littlegarbage;
+package com.example.littlegarbage.json;
 
 import org.json.JSONException;
 import org.json.JSONObject;
