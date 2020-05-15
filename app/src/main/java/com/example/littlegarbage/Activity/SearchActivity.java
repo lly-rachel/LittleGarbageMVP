@@ -375,8 +375,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         city.put("深圳",440300);
         city.put("北京",110000);
 
-        if(cityname!=null){
-            citydaima = String.valueOf(city.get(cityname));
+        if(cityname!=null){//从设置里接收到城市名字
+            citydaima = String.valueOf(city.get(cityname));//转换城市id
         }
 
     }
@@ -400,7 +400,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
                 if(!TextUtils.isEmpty(garbage)){
 
-                    getTheGarbageMessageToIntent(garbage);
+                    getTheGarbageMessageToIntent(garbage);//讲获取到的垃圾名称发送到展示界面
 
                 }else{
                     Toast.makeText(this,"输入信息不能为空",Toast.LENGTH_LONG).show();
@@ -418,6 +418,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 /*获取相册图片*/
             case R.id.search_photo:
 
+                //动态获取内存
                 if(ContextCompat.checkSelfPermission
                         (this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
@@ -459,21 +460,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-
-
-    private void startVoiceRecognitionActivity() {
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
-
-        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
-    }
-
     /*初始化MediaRecorder*/
     public void init(){
 
@@ -514,7 +500,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             throw new RuntimeException("Couldn't create recording audio file", e);
         }
 
-
+        //将音频写入文件
         recorder.setOutputFile(audioFile.getAbsolutePath());
 
         try {
@@ -720,15 +706,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     }
 
-//                case VOICE_RECOGNITION_REQUEST_CODE:
-//                    ArrayList matches = data.getStringArrayListExtra(
-//
-//                            RecognizerIntent.EXTRA_RESULTS);
-//
-//                    seachnameATV.setText((Integer) matches.get(0));
-//                    //移动光标至最后一个字符，使识别语音后显示联想词
-//                    seachnameATV.setSelection(((String) matches.get(0)).length());
-
                 default:
                     break;
             }
@@ -892,9 +869,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         if (confidence_max == NameList.get(i).getConfidence()) {
                             GarbageBean.ResultBean.GarbageInfoBean gib = NameList.get(i);
                             Intent intent = new Intent(this,ShowGarbageDetailActivity.class);
-                            intent.putExtra("bean", gib);
+                            intent.putExtra("bean", gib);//利用序列化将bean传入显示界面
                             intent.putExtra("citydaima",citydaima);
-                           // intent.putExtra("garbage",gib.getGarbage_name());
                             startActivity(intent);
                             break;
                         }
