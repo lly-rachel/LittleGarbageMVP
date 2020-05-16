@@ -6,11 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -45,8 +40,8 @@ public class ShotShareUtil {
             File dirFile = new File(sdCardDir);  //目录转化成文件夹
             if (!dirFile.exists()) {              //如果不存在，那就建立这个文件夹
                 dirFile.mkdirs();
-            }                          //文件夹有啦，就可以保存图片啦
-            File file = new File(sdCardDir, "share.png");// 在SDcard的目录下创建图片文,以当前时间为其命名
+            }
+            File file = new File(sdCardDir, "share.png");// 在该目录下创建图片
             if(file.exists())
             {
                 file.delete();

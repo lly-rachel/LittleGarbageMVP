@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 finish();
             }
-        }, 3000);//延迟5S后发送handler信息
+        }, 3000);//延迟3s后发送handler信息
 
     }
 

@@ -165,15 +165,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
             //分享
             case R.id.detail_share :
 
-//                View view = this.getWindow().getDecorView();
-//
-//                Bitmap bitmap = getNormalViewScreenshot(view);
-//                int w = bitmap.getWidth(); // 得到图片的宽，高
-//                int h = bitmap.getHeight();
-////                Bitmap bp = Bitmap.createBitmap(bitmap, 0, 50, w, h, null, true);
-//                ShotShareUtil.shotShare(this,bitmap);
-
-                // View是你需要截图的View
+                // View是全屏截图
                 View view = this.getWindow().getDecorView();
                 view.setDrawingCacheEnabled(true);
                 view.buildDrawingCache();
@@ -192,7 +184,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
                         - statusBarHeight);
                 view.destroyDrawingCache();
 
-                ShotShareUtil.shotShare(this,b);
+                ShotShareUtil.shotShare(this,b);//将该图片分享
 
                 break;
         }
@@ -221,6 +213,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
             }
 
             if (garbageString == null) {
+                //获取失败 也保存到数据库，确保历史记录也有这条非法输入，但点击时只显示空信息界面
                 garbageString="数据获取错误";
 
             }else{

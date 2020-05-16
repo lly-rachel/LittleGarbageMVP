@@ -243,7 +243,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public  void iniEdt() {
 
         seachnameATV = findViewById(R.id.garbage_search_autoCompelete);
-        seachnameATV.setThreshold(1);
+        seachnameATV.setThreshold(1);//输入一个字符就开始展示联想词
 
 
         /*获取输入框监听  联想词可操作*/
@@ -262,7 +262,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             public void afterTextChanged(Editable s) {
 
                 String name=seachnameATV.getText().toString();
-         //       String name = String.valueOf(s);
+
                 try {
                     Imagename = java.net.URLEncoder.encode(name,"UTF-8");
                     GetImageData(Imagename);
@@ -465,7 +465,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置播放源 麦克风
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB); //设置输入格式 3gp
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB); //设置输入格式 AMR
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //设置编码 AMR
 
 
@@ -769,9 +769,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     private void getThePictureName(Bitmap bitmap) {
 
-        Bitmap bm = compressScale(bitmap);
+        Bitmap bm = compressScale(bitmap);//压缩图片
 
-        imgBase = bitmaptoString(bm);
+        imgBase = bitmaptoString(bm);//获取图像的Base64编码
 
         Toast.makeText(this,"获取信息中...请耐心等待\n超过10s不跳转界面视为获取该信息失败",Toast.LENGTH_LONG).show();
         // 启用网络线程

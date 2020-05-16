@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class GetMD5 {
+public class GetMD5 {//sign参数需要MD5加密
 
     public static String md5(String string) {
         if (TextUtils.isEmpty(string)) {
