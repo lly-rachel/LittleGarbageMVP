@@ -97,10 +97,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     private static int REQUEST_PERMISSION_CODE = 3;
 
-
-    MediaRecorder recorder;
-    File audioFile; //录音保存的文件
-    boolean isRecoding=false;// true 表示正在录音
     //利用AudioRecorder录制wav文件
     AudioUtil audioUtil = AudioUtil.getInstance();
 
