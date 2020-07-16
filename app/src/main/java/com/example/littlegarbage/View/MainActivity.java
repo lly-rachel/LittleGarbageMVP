@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Activity;
+package com.example.littlegarbage.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 

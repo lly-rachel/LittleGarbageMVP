@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Activity;
+package com.example.littlegarbage.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +25,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -43,10 +42,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.littlegarbage.json.GarbageBean;
+import com.example.littlegarbage.Util.AudioUtil;
+import com.example.littlegarbage.Util.PictureUtil;
+import com.example.littlegarbage.bean.GarbageBean;
 import com.example.littlegarbage.Util.GetHttpData;
 import com.example.littlegarbage.Util.HttpUtil;
-import com.example.littlegarbage.json.JsonParser;
+import com.example.littlegarbage.db.JsonParser;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Adapter.SearchHistoryAdapter;
 import com.example.littlegarbage.db.DBManeger;
@@ -100,9 +101,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     MediaRecorder recorder;
     File audioFile; //录音保存的文件
     boolean isRecoding=false;// true 表示正在录音
-
-
-    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+    //利用AudioRecorder录制wav文件
+    AudioUtil audioUtil = AudioUtil.getInstance();
 
     ImageView seachIv,soundIv,photoIv,takepictureIv;
     ImageView shezhiIv;
@@ -125,14 +125,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+        //隐藏软键盘
+        getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
         Intent intent=getIntent();
         cityname=intent.getStringExtra("city");
 
-        iniDetail();
+        initViews();
 
 
         hot_historyGv=findViewById(R.id.hot_history_Gridview);
@@ -154,7 +155,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         });
 
 
-        iniEdt();
+        initEdt();
 
     }
 
@@ -177,7 +178,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 });
 
 
-            } catch (MalformedURLException | JSONException e) {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         }
@@ -242,7 +243,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
 
     /*初始化AutoCompeleteTextView，设置适配器*/
-    public  void iniEdt() {
+    public  void initEdt() {
 
         seachnameATV = findViewById(R.id.garbage_search_autoCompelete);
         seachnameATV.setThreshold(1);//输入一个字符就开始展示联想词
@@ -309,7 +310,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 });
 
 
-            } catch (MalformedURLException | JSONException e) {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         }
@@ -346,7 +347,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void iniDetail()  {
+    private void initViews()  {
 
         seachIv = findViewById(R.id.garbage_search);
         soundIv = findViewById(R.id.search_sound);
@@ -432,120 +433,34 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 /*录音，获取音频文件*/
             case R.id.search_sound:
 
-             //   Toast.makeText(this,"功能尚在开发中，敬请期待...",Toast.LENGTH_SHORT).show();
-
                 open(this);//动态获取权限
+
 
                 if(isFirst){
                     soundIv.setImageResource(R.mipmap.yuyinzanting);
 
-                    startin();
+
+                    audioUtil.startRecord();
+                    audioUtil.recordData();
+                    Toast.makeText(this,"开始录音",Toast.LENGTH_SHORT).show();
 
                     isFirst=false;
                 }else{
                     soundIv.setImageResource(R.mipmap.yuyin);
 
+                    audioUtil.stopRecord();
+                    audioUtil.convertWaveFile();
+                    Toast.makeText(this,"停止录音，获取信息中...",Toast.LENGTH_SHORT).show();
+                    HttpThreadToGetSoundName getsoundName = new HttpThreadToGetSoundName();
+                    getsoundName.start();
 
-                    stopin();
-//                    HttpThreadToGetSoundName getsoundName = new HttpThreadToGetSoundName();
-//                    getsoundName.start();
-
-                    Toast.makeText(this,"音频文件存于->"+audioFile.getAbsolutePath()+"\n该功能尚在开发中，敬请期待...",Toast.LENGTH_LONG).show();
-                  //  Toast.makeText(this,"该功能尚在开发中，敬请期待...",Toast.LENGTH_SHORT).show();
                     isFirst=true;
                 }
-
 
                 break;
 
         }
     }
-
-
-    /*初始化MediaRecorder*/
-    public void init(){
-
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);//设置播放源 麦克风
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB); //设置输入格式 AMR
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //设置编码 AMR
-
-
-    }
-
-    /*实现录音功能*/
-    public void recod(){
-
-        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-            Toast.makeText(this, "SD卡不存在，请插入SD卡！", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        //这里为文件保存路径
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/BitmapTest");
-        init();
-        if(!path.exists())
-        {
-            path.mkdirs();
-        }
-
-        try {
-            //这个地方写文件名，可以利用时间来保存为不同的文件名
-            audioFile=new File(path,"test.amr");
-            if(audioFile.exists())
-            {
-                audioFile.delete();
-            }
-            audioFile.createNewFile();//创建文件
-
-        } catch (Exception e) {
-            throw new RuntimeException("Couldn't create recording audio file", e);
-        }
-
-        //将音频写入文件
-        recorder.setOutputFile(audioFile.getAbsolutePath());
-
-        try {
-            recorder.prepare();
-        } catch (IllegalStateException e) {
-            throw new RuntimeException("IllegalStateException on MediaRecorder.prepare", e);
-        } catch (IOException e) {
-            throw new RuntimeException("IOException on MediaRecorder.prepare", e);
-        }
-        isRecoding=true;
-        recorder.start();
-    }
-
-    /*开始录音*/
-    public void startin(){
-        Toast.makeText(this,"开始录音",Toast.LENGTH_SHORT).show();
-        recod();
-    }
-
-    /*停止录音*/
-    public void stopin(){
-        if(isRecoding)
-        {
-            Toast.makeText(this,"停止录音",Toast.LENGTH_SHORT).show();
-            if (recorder != null){
-                try {
-
-                    recorder.stop();
-                } catch (IllegalStateException e) {
-
-                    //e.printStackTrace();
-                    recorder = null;
-                    recorder = new MediaRecorder();
-                }
-                recorder.release();
-                recorder = null;
-
-            }
-        }
-    }
-
-
-
 
     /*网络请求，获取语音识别的数据*/
     public class HttpThreadToGetSoundName extends Thread{
@@ -565,7 +480,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 String version_release = android.os.Build.VERSION.RELEASE;
                 Integer packagecode = packageCode(SearchActivity.this);
 
-                garbageString = HttpUtil.sendOkHttpSoundRequest(SearchActivity.this,audioFile,model,version_release,packagecode,citydaima);
+                garbageString = HttpUtil.sendOkHttpSoundRequest(model,version_release,packagecode,citydaima);
 
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
@@ -771,9 +686,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     private void getThePictureName(Bitmap bitmap) {
 
-        Bitmap bm = compressScale(bitmap);//压缩图片
+        Bitmap bm = PictureUtil.compressScale(bitmap);//压缩图片
 
-        imgBase = bitmaptoString(bm);//获取图像的Base64编码
+        imgBase = PictureUtil.bitmaptoString(bm);//获取图像的Base64编码
 
         Toast.makeText(this,"获取信息中...请耐心等待\n超过10s不跳转界面视为获取该信息失败",Toast.LENGTH_LONG).show();
         // 启用网络线程
@@ -829,7 +744,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void getTheGarbageMessage(String finalstring){
         List<GarbageBean.ResultBean.GarbageInfoBean> NameList = new ArrayList<>();
         Double confidence_max=0.0;
-        String garbageName = null;
         if(finalstring!=null) {
             JSONObject joname = null;
             try {
@@ -886,78 +800,4 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    /* 压缩图片(确保图片小于2M)*/
-    public static Bitmap compressScale(Bitmap image) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        // 判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
-        if (baos.toByteArray().length / 1024 > 1024) {
-            baos.reset();// 重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, 80, baos);// 这里压缩50%，把压缩后的数据存放到baos中
-        }
-
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
-        BitmapFactory.Options newOpts = new BitmapFactory.Options();
-        // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
-        newOpts.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-        newOpts.inJustDecodeBounds = false;
-        int w = newOpts.outWidth;
-        int h = newOpts.outHeight;
-        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
-
-        float hh = 512f;
-        float ww = 512f;
-
-        // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-        int be = 1;// be=1表示不缩放
-        if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
-            be = (int) (newOpts.outWidth / ww);
-        } else if (w < h && h > hh) { // 如果高度高的话根据高度固定大小缩放
-            be = (int) (newOpts.outHeight / hh);
-        }
-
-        if (be <= 0)
-            be = 1;
-        newOpts.inSampleSize = be; // 设置缩放比例
-        // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
-
-        isBm = new ByteArrayInputStream(baos.toByteArray());
-        bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-        return compressImage(bitmap);// 压缩好比例大小后再进行质量压缩
-    }
-
-
-    /*质量压缩*/
-    public static Bitmap compressImage(Bitmap image) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 90;
-
-        while (baos.toByteArray().length / 1024 > 700) { // 循环判断如果压缩后图片是否大于700kb,大于继续压缩
-            baos.reset(); // 重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;// 每次都减少10
-        }
-
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
-        return bitmap;
-
-    }
-
-
-    /*将图像进行Base64编码*/
-    public String bitmaptoString(Bitmap bitmap) {
-
-        // 将Bitmap转换成字符串
-        String string = null;
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bStream);
-        byte[] bytes = bStream.toByteArray();
-        string = Base64.encodeToString(bytes, Base64.DEFAULT);
-        return string;
-    }
 }

@@ -26,7 +26,6 @@ public class ShotShareUtil {
         saveBitmap(context,bitmap);
 
         //分享
-
         ShareImage(context,BitmapPath);
 
     }

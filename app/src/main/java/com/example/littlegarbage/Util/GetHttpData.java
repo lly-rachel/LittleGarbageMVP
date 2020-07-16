@@ -1,8 +1,6 @@
 package com.example.littlegarbage.Util;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,21 +8,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class GetHttpData {
 
 
 
-    public static String GetHotData(String s) throws MalformedURLException, JSONException {
+    public static String GetHotData(String s) throws MalformedURLException {
 
 
 

@@ -1,11 +1,8 @@
 package com.example.littlegarbage.Util;
 
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
-
-import androidx.core.content.FileProvider;
+import android.os.Environment;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +12,8 @@ import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -50,7 +49,7 @@ public class HttpUtil {
 
         String url1 = "https://aiapi.jd.com/jdai/garbageTextSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
-        String s1 = GetMD5.md5("1a8c89772abf812630f6687255d22a3b" + time);
+        String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
         String urls = url1 + time + "&sign=" + s1;
 
         URL url = new URL(urls);
@@ -99,7 +98,7 @@ public class HttpUtil {
 
         String url1 = "https://aiapi.jd.com/jdai/garbageImageSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
-        String s1 = GetMD5.md5("1a8c89772abf812630f6687255d22a3b" + time);
+        String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
         String urls = url1 + time + "&sign=" + s1;
 
         URL url = new URL(urls);
@@ -130,17 +129,9 @@ public class HttpUtil {
     }
 
 
-    public static String sendOkHttpSoundRequest(Context context,File file,String model,String VERSION,Integer packagecode,String citydaima) throws JSONException, MalformedURLException {
+    public static String sendOkHttpSoundRequest(String model,String VERSION,Integer packagecode,String citydaima) throws JSONException, MalformedURLException {
 
-        Uri uri;
-        if(Build.VERSION.SDK_INT>=24){
-            uri = FileProvider.getUriForFile
-                    (context,"com.example.littlegarbage.fileprovider",file);
-        }else{
-            uri = Uri.fromFile(file);
-        }
-
-        File soundfile = new File(String.valueOf(uri));
+        File sound = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/BitmapTest/"+"yinfu.wav");
 
         if(citydaima==null){
             citydaima=String.valueOf(310000);
@@ -148,7 +139,7 @@ public class HttpUtil {
 
         JSONObject jsonEncode = new JSONObject();
         jsonEncode.put("channel",1);//int类型，⾳频声道数，目前只⽀持单声道，填1
-        jsonEncode.put("format","amr");//string类型，⾳频格式，支持wav， amr，mp3
+        jsonEncode.put("format","wav");//string类型，⾳频格式，支持wav， amr，mp3
         jsonEncode.put("sample_rate",16000);//int类型，采样率，目前只⽀持填写16000
         jsonEncode.put("post_process",0);//int类型，数字后处理:1为强制开启(开启后，会把结果中的数字汉字转换成阿拉伯数字。例如，识别结果中的“一千”会 转成“1000”)，0为根据服务端配置是否进行数字后处理
 
@@ -163,22 +154,22 @@ public class HttpUtil {
         String url1 = "https://aiapi.jd.com/jdai/garbageVoiceSearch?";
         String appkey = "appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
-        String s1 = GetMD5.md5("1a8c89772abf812630f6687255d22a3b" + time);
+        String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
         String urls = url1+appkey + time + "&sign=" + s1;
 
         URL url = new URL(urls);
 
         MediaType parse = MediaType.parse("application/octet-stream");//application/octet-stream
-        if (file !=null) {
+        if (sound !=null) {
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(7000, TimeUnit.SECONDS)
                 .writeTimeout(7000, TimeUnit.SECONDS)
                 .readTimeout(7000, TimeUnit.SECONDS)
                     .build();
 
-            RequestBody requestBody = RequestBody.create(parse,file);
+            RequestBody requestBody = RequestBody.create(parse,sound);
             MultipartBody build = new MultipartBody.Builder()
-                    .addFormDataPart("file", file.getName(), requestBody)
+                    .addFormDataPart("file", sound.getName(), requestBody)
                     .setType(MultipartBody.FORM)
                     .build();
 
@@ -209,5 +200,28 @@ public class HttpUtil {
         return null;
     }
 
+    //sign参数需要MD5加密
+    public static String getMD5(String string) {
+        if (TextUtils.isEmpty(string)) {
+            return "";
+        }
+        MessageDigest md5 = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = md5.digest(string.getBytes());
+            String result = "";
+            for (byte b : bytes) {
+                String temp = Integer.toHexString(b & 0xff);
+                if (temp.length() == 1) {
+                    temp = "0" + temp;
+                }
+                result += temp;
+            }
+            return result;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
 }

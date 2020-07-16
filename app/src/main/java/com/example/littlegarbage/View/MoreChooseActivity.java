@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Activity;
+package com.example.littlegarbage.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -90,9 +90,14 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
     public void deleteFile() {
 
-        File file = new File(Environment.getExternalStorageDirectory()+ "/BitmapTest"+"/test.amr");
+        File file = new File(Environment.getExternalStorageDirectory()+ "/BitmapTest"+"/yinfu.wav");
         if (file.exists()) {
             file.delete();
+        }
+
+        File soundfile = new File(Environment.getExternalStorageDirectory()+ "/BitmapTest"+"/yinfu.pcm");
+        if (soundfile.exists()) {
+            soundfile.delete();
         }
 
 

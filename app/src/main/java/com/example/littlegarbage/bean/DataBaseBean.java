@@ -1,4 +1,4 @@
-package com.example.littlegarbage.db;
+package com.example.littlegarbage.bean;
 
 public class DataBaseBean {
 

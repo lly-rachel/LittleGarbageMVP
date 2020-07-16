@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Activity;
+package com.example.littlegarbage.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.littlegarbage.json.GarbageBean;
+import com.example.littlegarbage.bean.GarbageBean;
 import com.example.littlegarbage.Util.HttpUtil;
-import com.example.littlegarbage.json.JsonParser;
+import com.example.littlegarbage.db.JsonParser;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.ShotShareUtil;
 import com.example.littlegarbage.db.DBManeger;
@@ -50,7 +50,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
         garbageInfoBean = (GarbageBean.ResultBean.GarbageInfoBean) intent.getSerializableExtra("bean");
         citydaima = intent.getStringExtra("citydaima");//得到的城市代码
 
-        iniView();
+        initViews();
         if(garbage!=null){
             hd = new Handler();
 
@@ -124,7 +124,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity implements View
 
     }
 
-    private void iniView() {
+    private void initViews() {
 
         garbageIv=findViewById(R.id.picture_laji);
         justpictureIv = findViewById(R.id.just_picture);

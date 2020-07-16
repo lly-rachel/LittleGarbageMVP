@@ -14,10 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.MoreChooseActivity"></activity>
-        <activity android:name=".Activity.ShowGarbageDetailActivity" />
-        <activity android:name=".Activity.SearchActivity" />
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".View.MoreChooseActivity"></activity>
+        <activity android:name=".View.ShowGarbageDetailActivity" />
+        <activity android:name=".View.SearchActivity" />
+        <activity android:name=".View.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

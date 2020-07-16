@@ -1,5 +1,7 @@
-package com.example.littlegarbage.json;
+package com.example.littlegarbage.db;
 
+
+import com.example.littlegarbage.bean.GarbageBean;
 
 import org.json.JSONArray;
 import org.json.JSONException;
