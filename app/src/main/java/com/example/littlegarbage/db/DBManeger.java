@@ -69,12 +69,12 @@ public class DBManeger {
         return list;
     }
 
-    /*根据城市名称，删除数据库的数据*/
+    /*根据垃圾名称，删除数据库的数据*/
     public static int deleteInfoByGarbage(String garbage){
         return database.delete("info","garbage=?",new String[]{garbage});
     }
 
-    /*根据城市名称替换信息内容*/
+    /*根据垃圾名称替换信息内容*/
     public static int updateInfoByGarbage(String garbage,String content){
         ContentValues values = new ContentValues();
         values.put("content",content);
