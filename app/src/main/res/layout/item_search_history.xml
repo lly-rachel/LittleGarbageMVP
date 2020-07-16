@@ -15,7 +15,7 @@
         android:layout_margin="3dp"
 
         android:background="@drawable/stroke"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="15dp"
         >
 
         <RelativeLayout
