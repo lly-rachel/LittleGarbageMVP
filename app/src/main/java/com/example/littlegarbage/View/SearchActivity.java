@@ -47,6 +47,7 @@ import com.example.littlegarbage.Util.PictureUtil;
 import com.example.littlegarbage.bean.GarbageBean;
 import com.example.littlegarbage.db.DBManeger;
 import com.example.littlegarbage.db.JsonParser;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -291,12 +292,7 @@ public class SearchActivity extends AppCompatActivity {
                 String imageData = GetHttpData.GetHotData(imageUrl);
                 final String finalImageData = imageData;
                 // 多线程更新 UI
-                hd.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setImageData(finalImageData);
-                    }
-                });
+                hd.post(() -> setImageData(finalImageData));
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -661,59 +657,28 @@ public class SearchActivity extends AppCompatActivity {
     /*解析图片识别的json数据*/
     public void getTheGarbageMessage(String finalstring) {
         List<GarbageBean.ResultBean.GarbageInfoBean> NameList = new ArrayList<>();
-        Double confidence_max = 0.0;
         if (finalstring != null) {
-            JSONObject joname = null;
-            try {
-                joname = new JSONObject(finalstring);
-                String code = joname.getString("code");
-                if (code.equals("10000")) {
-                    String result = joname.getString("result");
 
-                    JSONObject resultGarbage = new JSONObject(result);
+           JsonParser jp = new JsonParser();
+           GarbageBean garbageBean = jp.GarbageParse(finalstring);
+           NameList = garbageBean.getResult().garbage_info;
+           Double confidence = NameList.get(0).getConfidence();
+           int maxindex=0;
 
-                    JSONArray listArray = resultGarbage.getJSONArray("garbage_info");
+           for(int i = 1;i < NameList.size();i++){
+               if(confidence<NameList.get(i).getConfidence()){
+                   confidence=NameList.get(i).getConfidence();
+                   maxindex=i;
+               }
+           }
 
-                    String cate_name = null;
-                    String city_id = null;
-                    String city_name = null;
-                    double confidence = 0;
-                    String garbage_name = null;
-                    String ps = null;
+            GarbageBean.ResultBean.GarbageInfoBean gib = NameList.get(maxindex);
+            Intent intent = new Intent(this, ShowGarbageDetailActivity.class);
+            intent.putExtra("bean", gib);//利用序列化将bean传入显示界面
+            intent.putExtra("citydaima", citydaima);
+            startActivity(intent);
 
-                    for (int i = 0; i < listArray.length(); i++) {
-                        JSONObject jsonArray = listArray.getJSONObject(i);
-                        cate_name = jsonArray.getString("cate_name");
-                        city_id = jsonArray.getString("city_id");
-                        city_name = jsonArray.getString("city_name");
-                        confidence = jsonArray.getDouble("confidence");
-                        garbage_name = jsonArray.getString("garbage_name");
-                        ps = jsonArray.getString("ps");
-                        if (confidence >= confidence_max) {
-                            //找到可信度最大的
-                            confidence_max = confidence;
-                            GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean = new GarbageBean.ResultBean.GarbageInfoBean
-                                    (cate_name, city_id, city_name, confidence, garbage_name, ps);
-                            NameList.add(garbageInfoBean);
-                        }
 
-                    }
-
-                    for (int i = 0; i < NameList.size(); i++) {
-                        if (confidence_max == NameList.get(i).getConfidence()) {
-                            GarbageBean.ResultBean.GarbageInfoBean gib = NameList.get(i);
-                            Intent intent = new Intent(this, ShowGarbageDetailActivity.class);
-                            intent.putExtra("bean", gib);//利用序列化将bean传入显示界面
-                            intent.putExtra("citydaima", citydaima);
-                            startActivity(intent);
-                            break;
-                        }
-                    }
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
     }
 

@@ -16,8 +16,6 @@ public class GetHttpData {
 
     public static String GetHotData(String s) throws MalformedURLException {
 
-
-
         String res = "";
 
         StringBuilder sb = new StringBuilder();
