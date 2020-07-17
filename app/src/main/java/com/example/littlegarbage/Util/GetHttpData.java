@@ -12,8 +12,6 @@ import java.net.URL;
 
 public class GetHttpData {
 
-
-
     public static String GetHotData(String s) throws MalformedURLException {
 
         String res = "";
