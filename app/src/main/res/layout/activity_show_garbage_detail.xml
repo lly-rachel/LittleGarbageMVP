@@ -12,7 +12,7 @@
         android:id="@+id/detail_sure"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:padding="2dp"
+        android:padding="3dp"
         android:src="@mipmap/sure"
         android:layout_alignParentRight="true"
         />
@@ -20,7 +20,7 @@
     <ImageView
         android:id="@+id/detail_share"
         android:layout_width="50dp"
-        android:layout_height="52dp"
+        android:layout_height="50dp"
         android:padding="5dp"
         android:src="@mipmap/fenxiang"
         android:layout_alignParentLeft="true"

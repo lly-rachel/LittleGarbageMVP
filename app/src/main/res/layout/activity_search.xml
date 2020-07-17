@@ -43,13 +43,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/show_layout"
-        android:padding="10dp"
+        android:padding="8dp"
         >
 
     <ImageView
         android:id="@+id/garbage_search"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:src="@mipmap/search"
         />
@@ -57,7 +57,7 @@
     <AutoCompleteTextView
         android:id="@+id/garbage_search_autoCompelete"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:padding="3dp"
         android:completionThreshold="1"
         android:layout_toLeftOf="@+id/garbage_search"
@@ -84,7 +84,7 @@
         <ImageView
             android:id="@+id/search_sound"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:padding="2dp"
             android:src="@mipmap/yuyin"
             android:background="@drawable/stroke"
@@ -96,7 +96,7 @@
         <ImageView
             android:id="@+id/search_takepicture"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:src="@mipmap/paizhao"
             android:padding="3dp"
             android:background="@drawable/stroke"
@@ -106,7 +106,7 @@
         <ImageView
             android:id="@+id/search_photo"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:src="@mipmap/photo"
             android:background="@drawable/stroke"
             android:layout_weight="1"

@@ -15,7 +15,6 @@ public class CityAdapter extends BaseAdapter {
 
     private List<String> mlist;
     private Context mContext;
-    public static String getcity;
 
     public CityAdapter(List<String> mlist, Context mContext) {
         this.mlist = mlist;

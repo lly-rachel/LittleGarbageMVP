@@ -131,10 +131,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         initViews();
 
-
-        hot_historyGv=findViewById(R.id.hot_history_Gridview);
-
-
        hd = new Handler();
 
         // 启用网络线程
@@ -142,13 +138,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         ht.start();
 
 
-        historyLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
-                String garbage = (String) historyAdapter.getItem(index);
-                getTheGarbageMessageToIntent(garbage);
-            }
-        });
 
 
         initEdt();
@@ -350,8 +340,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         photoIv = findViewById(R.id.search_photo);
         takepictureIv = findViewById(R.id.search_takepicture);
         shezhiIv = findViewById(R.id.shezhi);
+        hot_historyGv=findViewById(R.id.hot_history_Gridview);
         historyLv = findViewById(R.id.search_history);
-        historyLv.setAdapter(historyAdapter);
 
 
         seachIv.setOnClickListener(this);
@@ -365,6 +355,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         historyAdapter = new SearchHistoryAdapter(this,garbagenameList);
         historyLv.setAdapter(historyAdapter);
+        historyLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
+                String garbage = (String) historyAdapter.getItem(index);
+                getTheGarbageMessageToIntent(garbage);
+            }
+        });
 
         //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
         //垃圾分类api支持的城市
@@ -464,9 +461,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void run() {
             super.run();
-
-            GarbageBean garbageBean = null;
-            JsonParser jp = new JsonParser();
 
             // 城市代码
             String garbageString = null;

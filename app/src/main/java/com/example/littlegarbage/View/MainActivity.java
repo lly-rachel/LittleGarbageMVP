@@ -17,7 +17,7 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView search;
-    private int recLen = 3;//展示时间3秒
+    private int recLen = 0;//展示时间3秒
     Timer timer = new Timer();
     private Handler handler;
     private Runnable runnable;
