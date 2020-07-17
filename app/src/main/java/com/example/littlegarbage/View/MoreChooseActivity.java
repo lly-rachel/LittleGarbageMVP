@@ -126,7 +126,7 @@ public class MoreChooseActivity extends AppCompatActivity implements View.OnClic
 
     public void ShowDialog() {
 
-        //避免连续点击，list连续添加 只在第一次点击时添加
+        //避免连续点击，list连续添加,只在第一次点击时添加
         if(isFirst){
             //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
             list.add("上海");
