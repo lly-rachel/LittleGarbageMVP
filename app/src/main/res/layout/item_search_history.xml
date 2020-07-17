@@ -46,7 +46,9 @@
                 android:layout_height="wrap_content"
                 android:text="扇子"
                 android:textStyle="bold"
-                android:maxLines="1"
+                android:ellipsize="end"
+                android:maxEms="7"
+                android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 />
