@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.HttpUtil;
 import com.example.littlegarbage.Util.ShotShareUtil;
@@ -100,34 +101,35 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
         switch (garbageInfoBean.getCate_name()) {
 
             case "厨余垃圾":
-                garbageIv.setImageResource(R.mipmap.chuyulaji);
+                Glide.with(this).load(R.mipmap.chuyulaji).into(garbageIv);
                 break;
 
             case "湿垃圾":
-                garbageIv.setImageResource(R.mipmap.shilaji);
+                Glide.with(this).load(R.mipmap.shilaji).into(garbageIv);
                 break;
 
             case "其他垃圾":
-                garbageIv.setImageResource(R.mipmap.qitalaji);
+                Glide.with(this).load(R.mipmap.qitalaji).into(garbageIv);
                 break;
 
             case "有害垃圾":
-                garbageIv.setImageResource(R.mipmap.youhailaji);
+                Glide.with(this).load(R.mipmap.youhailaji).into(garbageIv);
                 break;
 
             case "可回收物":
-                garbageIv.setImageResource(R.mipmap.kehuishouwu);
+                Glide.with(this).load(R.mipmap.kehuishouwu).into(garbageIv);
                 break;
 
             case "干垃圾":
-                garbageIv.setImageResource(R.mipmap.ganlaji);
+                Glide.with(this).load(R.mipmap.ganlaji).into(garbageIv);
                 break;
 
             default:
-                garbageIv.setImageResource(R.mipmap.laji);
+                Glide.with(this).load(R.mipmap.laji).into(garbageIv);
         }
 
-        justpictureIv.setImageResource(R.mipmap.bg);
+        Glide.with(this).load(R.mipmap.bg).into(justpictureIv);
+
 
         garbagenametext.setText("垃圾名称：");
         camenametext.setText("垃圾类型：");

@@ -162,20 +162,24 @@
             android:id="@+id/just_history_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="历史记录:"
+            android:text="搜索历史:"
             android:textStyle="bold"
             android:textSize="16sp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             ></TextView>
 
-        <ListView
-            android:id="@+id/search_history"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/just_history_text"
-            android:divider="@null"></ListView>
 
+
+        <GridView
+            android:id="@+id/search_history"
+            android:layout_below="@+id/just_history_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="3"
+            android:horizontalSpacing="5dp"
+            android:verticalSpacing="3dp"
+            ></GridView>
     </RelativeLayout>
 
 </RelativeLayout>

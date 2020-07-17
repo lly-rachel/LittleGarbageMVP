@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.littlegarbage.Adapter.SearchHistoryAdapter;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.AudioUtil;
@@ -66,14 +67,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SearchActivity extends AppCompatActivity  {
+public class SearchActivity extends AppCompatActivity {
 
     @BindView(R.id.garbage_search_autoCompelete) AutoCompleteTextView searchnameATV;
     @BindView(R.id.search_sound) ImageView soundIv;
-    @BindView(R.id.search_history) ListView historyLv;
+
 
     /*显示联想词*/
     @BindView(R.id.hot_history_Gridview) GridView hot_historyGv;
+
+    /*显示搜索历史*/
+    @BindView(R.id.search_history) GridView searchHistoryGv;
 
     private ArrayAdapter<String> arrayAdapter;
     Handler hd;
@@ -99,7 +103,6 @@ public class SearchActivity extends AppCompatActivity  {
 
     /*利用AudioRecorder录制wav文件*/
     AudioUtil audioUtil = AudioUtil.getInstance();
-
 
     String garbage;
     SearchHistoryAdapter historyAdapter;
@@ -163,7 +166,7 @@ public class SearchActivity extends AppCompatActivity  {
                 open(this);//动态获取权限
 
                 if (isFirst) {
-                    soundIv.setImageResource(R.mipmap.yuyinzanting);
+                    Glide.with(this).load(R.mipmap.yuyinzanting).into(soundIv);
 
                     audioUtil.startRecord();
                     audioUtil.recordData();
@@ -171,7 +174,7 @@ public class SearchActivity extends AppCompatActivity  {
 
                     isFirst = false;
                 } else {
-                    soundIv.setImageResource(R.mipmap.yuyin);
+                    Glide.with(this).load(R.mipmap.yuyin).into(soundIv);
 
                     audioUtil.stopRecord();
                     audioUtil.convertWaveFile();
@@ -205,7 +208,6 @@ public class SearchActivity extends AppCompatActivity  {
                 break;
         }
     }
-
 
     /*获取热门搜索数据*/
     public class HttpThreadToGetData extends Thread {
@@ -259,7 +261,6 @@ public class SearchActivity extends AppCompatActivity  {
 
     }
 
-
     /*根据传进garbage到展示界面*/
     private void getTheGarbageMessageToIntent(String garbage) {
 
@@ -269,8 +270,6 @@ public class SearchActivity extends AppCompatActivity  {
         startActivity(intent);
 
     }
-
-
 
     /*根据输入的文本 传入content参数*/
     private void GetImageData(String name) {
@@ -340,13 +339,10 @@ public class SearchActivity extends AppCompatActivity  {
         garbagenameList = DBManeger.queryAllGarbageName();
 
         historyAdapter = new SearchHistoryAdapter(this, garbagenameList);
-        historyLv.setAdapter(historyAdapter);
-        historyLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            public void onItemClick(AdapterView<?> arg0, View v, int index, long arg3) {
-                String garbage = (String) historyAdapter.getItem(index);
-                getTheGarbageMessageToIntent(garbage);
-            }
+        searchHistoryGv.setAdapter(historyAdapter);
+        searchHistoryGv.setOnItemClickListener((arg0, v, index, arg3) -> {
+            String garbage = (String) historyAdapter.getItem(index);
+            getTheGarbageMessageToIntent(garbage);
         });
 
         //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
@@ -395,8 +391,6 @@ public class SearchActivity extends AppCompatActivity  {
         });
 
     }
-
-
 
     /*网络请求，获取语音识别的数据*/
     public class HttpThreadToGetSoundName extends Thread {

@@ -14,38 +14,44 @@
         android:layout_height="wrap_content"
         android:layout_margin="3dp"
 
-        android:background="@drawable/stroke"
-        app:cardCornerRadius="15dp"
+        android:background="@drawable/hot_bg"
+
         >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:background="@drawable/stroke"
+            android:background="@drawable/hot_bg"
             >
 
+            <ImageView
+                android:id="@+id/search_history_delete"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+
+                android:src="@mipmap/close"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/search_history_delete">
             <TextView
 
                 android:id="@+id/search_history_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="扇子"
-                android:textSize="18sp"
                 android:textStyle="bold"
+                android:maxLines="1"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 />
 
-            <ImageView
-                android:id="@+id/search_history_delete"
-                android:layout_width="30dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:paddingRight="10dp"
-                android:src="@mipmap/close"
-                />
+            </RelativeLayout>
 
         </RelativeLayout>
 
