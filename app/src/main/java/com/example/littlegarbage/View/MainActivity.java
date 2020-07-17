@@ -1,12 +1,13 @@
 package com.example.littlegarbage.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.db.DBManeger;
@@ -14,26 +15,29 @@ import com.example.littlegarbage.db.DBManeger;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-    TextView search;
+public class MainActivity extends AppCompatActivity  {
+
+    @BindView(R.id.earth)
+    ImageView earth;
+    @BindView(R.id.main_search)
+    TextView mainSearch;
     private int recLen = 0;//展示时间3秒
     Timer timer = new Timer();
     private Handler handler;
     private Runnable runnable;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         DBManeger.initDB(this);
-
-        search=findViewById(R.id.main_search);
-        search.setOnClickListener(this);
-        search.setText("跳过 "+recLen);//最开始显示
-
+        mainSearch.setText("跳过 " + recLen);//最开始显示
 
         TimerTask task = new TimerTask() {
             @Override
@@ -42,10 +46,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         recLen--;
-                        search.setText("跳过 " + recLen);
-                        if (recLen <=0) {
+                        mainSearch.setText("跳过 " + recLen);
+                        if (recLen <= 0) {
                             timer.cancel();
-                            search.setVisibility(View.GONE);//倒计时到0隐藏字体
+                            mainSearch.setVisibility(View.GONE);//倒计时到0隐藏字体
                         }
                     }
                 });
@@ -68,20 +72,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public void onClick(View v) {
 
-        switch (v.getId()){
-
-            case R.id.main_search:
-                Intent intent=new Intent(this,SearchActivity.class);
-                if (runnable != null) {
-                    handler.removeCallbacks(runnable);
-                }
-                startActivity(intent);
-                break;
-
+    @OnClick(R.id.main_search)
+    public void onViewClicked() {
+        Intent intent = new Intent(this, SearchActivity.class);
+        if (runnable != null) {
+            handler.removeCallbacks(runnable);
         }
-
+        startActivity(intent);
     }
 }

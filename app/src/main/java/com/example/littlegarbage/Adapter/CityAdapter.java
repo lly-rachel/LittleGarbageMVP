@@ -11,6 +11,9 @@ import com.example.littlegarbage.R;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class CityAdapter extends BaseAdapter {
 
     private List<String> mlist;
@@ -40,12 +43,12 @@ public class CityAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         final CityViewHolder holder;
-        if(convertView==null){
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.city_item,null);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.city_item, null);
             holder = new CityViewHolder(convertView);
             convertView.setTag(holder);
-        }else{
-            holder= (CityViewHolder) convertView.getTag();
+        } else {
+            holder = (CityViewHolder) convertView.getTag();
         }
         final String name = mlist.get(position);
         holder.citynameTv.setText(name);
@@ -53,15 +56,12 @@ public class CityAdapter extends BaseAdapter {
         return convertView;
     }
 
-    class CityViewHolder  {
 
-        TextView citynameTv;
+    static class CityViewHolder {
+        @BindView(R.id.cityname) TextView citynameTv;
 
-
-        public CityViewHolder(View itemView){
-            citynameTv=itemView.findViewById(R.id.cityname);
-
+        CityViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
-
 }

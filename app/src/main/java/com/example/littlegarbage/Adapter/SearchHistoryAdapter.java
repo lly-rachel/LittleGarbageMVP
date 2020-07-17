@@ -13,6 +13,9 @@ import com.example.littlegarbage.db.DBManeger;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class SearchHistoryAdapter extends BaseAdapter {
 
     Context context;
@@ -42,42 +45,31 @@ public class SearchHistoryAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder;
-        if(convertView==null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_search_history,null);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_search_history, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
-        }else{
-            holder= (ViewHolder) convertView.getTag();
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
         final String name = mDatas.get(position);
         holder.garbagenameTv.setText(name);
-        holder.deleteIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDatas.remove(name);
-                DBManeger.deleteInfoByGarbage(name);
-                notifyDataSetChanged();
-            }
+        holder.deleteIv.setOnClickListener(v -> {
+            mDatas.remove(name);
+            DBManeger.deleteInfoByGarbage(name);
+            notifyDataSetChanged();
         });
 
         return convertView;
     }
 
+    static class ViewHolder {
+        @BindView(R.id.search_history_name) TextView garbagenameTv;
+        @BindView(R.id.search_history_delete) ImageView deleteIv;
 
-
-    class ViewHolder  {
-
-        ImageView deleteIv;
-        TextView garbagenameTv;
-
-        public ViewHolder(View itemView){
-
-            deleteIv=itemView.findViewById(R.id.search_history_delete);
-            garbagenameTv=itemView.findViewById(R.id.search_history_name);
-
-
-
-
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
+
 }
