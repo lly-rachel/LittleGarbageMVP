@@ -10,16 +10,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Database;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
+import com.example.littlegarbage.GarbageData;
 import com.example.littlegarbage.GarbageDataBase;
 import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.HttpUtil;
 import com.example.littlegarbage.Util.ShotShareUtil;
 import com.example.littlegarbage.bean.GarbageBean;
-import com.example.littlegarbage.db.DBManeger;
 import com.example.littlegarbage.db.JsonParser;
 
 import org.json.JSONException;
@@ -67,7 +68,7 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
         GarbageDataBase garbageDataBase= Room.databaseBuilder(
                 this,GarbageDataBase.class,"garbage_database").build();
         garbageDataDao=garbageDataBase.getGarbageDataDao();
-//        DBManeger.initDB(this);
+
 
         SearchActivity.open(ShowGarbageDetailActivity.this);
 
@@ -87,16 +88,10 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
 
             int i = garbageDataDao.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
             if(i<=0){
-                garbageDataDao.insertGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+                GarbageData garbageData = new GarbageData(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+                garbageDataDao.insertGarbageInfo(garbageData);
             }
 
-//            //更新数据库信息
-////            int i = DBManeger.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
-////            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-////            if (i <= 0) {
-////                DBManeger.addGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
-////
-////            }
         }
 
     }
@@ -225,27 +220,15 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
                 garbageBean = jp.GarbageParse(garbageString);
                 final GarbageBean finalGb = garbageBean;
                 // 多线程更新 UI
-                hd.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        setDataText(finalGb);
-                    }
-                });
+                hd.post(() -> setDataText(finalGb));
 
             }
 
-//            //更新数据库信息
-//            int i = DBManeger.updateInfoByGarbage(garbage, garbageString);
-//            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-//            if (i <= 0) {
-//                DBManeger.addGarbageInfo(garbage, garbageString);
-//
-//            }
+            int i = garbageDataDao.updateInfoByGarbage(garbage, garbageString);
 
-            int i = garbageDataDao.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
             if(i<=0){
-                garbageDataDao.insertGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+                GarbageData garbageData = new GarbageData(garbage,garbageString);
+                garbageDataDao.insertGarbageInfo(garbageData);
             }
         }
 

@@ -13,9 +13,8 @@ import androidx.room.Room;
 import com.example.littlegarbage.GarbageDataBase;
 import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
-import com.example.littlegarbage.View.SearchActivity;
-import com.example.littlegarbage.db.DBManeger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,7 +64,6 @@ public class SearchHistoryAdapter extends BaseAdapter {
         holder.deleteIv.setOnClickListener(v -> {
             mDatas.remove(name);
             garbageDataDao.deleteInfoByGarbage(name);
-            //DBManeger.deleteInfoByGarbage(name);
             notifyDataSetChanged();
         });
 

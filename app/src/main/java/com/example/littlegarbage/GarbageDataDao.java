@@ -1,12 +1,9 @@
 package com.example.littlegarbage;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Update;
-
-import com.example.littlegarbage.bean.DataBaseBean;
 
 import java.util.List;
 
@@ -14,18 +11,18 @@ import java.util.List;
 public interface GarbageDataDao {
 
     @Insert
-    long insertGarbageInfo(String garbage,String content);
+    long insertGarbageInfo(GarbageData garbageData);
 
-    @Update
+    @Query("UPDATE GARBAGE_TABLE SET content =:content WHERE garbage =:garbage")
     int updateInfoByGarbage(String garbage,String content);
 
-    @Delete
+    @Query("DELETE FROM GARBAGE_TABLE WHERE garbage = :garbage")
     int deleteInfoByGarbage(String garbage);
 
-    @Query("SELECT * FROM GARBAGE_TABLE ")
-    List<DataBaseBean> queryAllInfo();
+//    @Query("SELECT * FROM GARBAGE_TABLE ORDER BY ID ASC")
+//    List<GarbageDataBase> queryAllInfo();
 
-    @Query("SELECT * FROM GARBAGE_TABLE ")
+    @Query("SELECT garbage FROM GARBAGE_TABLE ORDER BY ID ASC")
     List<String> queryAllGarbageName();
 
 

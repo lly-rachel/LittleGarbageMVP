@@ -1,5 +1,6 @@
 package com.example.littlegarbage;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -7,6 +8,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "GARBAGE_TABLE")
 public class GarbageData {
 
+    @NonNull
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -14,6 +16,11 @@ public class GarbageData {
     private String garbage;
     @ColumnInfo(name = "content")
     private String content;
+
+    public GarbageData(String garbage, String content) {
+        this.garbage = garbage;
+        this.content = content;
+    }
 
     public int getId() {
         return id;

@@ -22,12 +22,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,9 +46,7 @@ import com.example.littlegarbage.Util.GetHttpData;
 import com.example.littlegarbage.Util.HttpUtil;
 import com.example.littlegarbage.Util.PictureUtil;
 import com.example.littlegarbage.bean.GarbageBean;
-import com.example.littlegarbage.db.DBManeger;
 import com.example.littlegarbage.db.JsonParser;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -342,15 +338,22 @@ public class SearchActivity extends AppCompatActivity {
 
     private void initViews() {
 
-        garbagenameList = garbageDataDao.queryAllGarbageName();
-                //DBManeger.queryAllGarbageName();
-
-        historyAdapter = new SearchHistoryAdapter(this, garbagenameList);
-        searchHistoryGv.setAdapter(historyAdapter);
-        searchHistoryGv.setOnItemClickListener((arg0, v, index, arg3) -> {
-            String garbage = (String) historyAdapter.getItem(index);
-            getTheGarbageMessageToIntent(garbage);
+        Thread thread=new Thread(()->{
+            garbagenameList = garbageDataDao.queryAllGarbageName();
         });
+        thread.start();
+
+
+        if(garbagenameList!=null){
+            historyAdapter = new SearchHistoryAdapter(this, garbagenameList);
+            searchHistoryGv.setAdapter(historyAdapter);
+            historyAdapter.notifyDataSetChanged();
+            searchHistoryGv.setOnItemClickListener((arg0, v, index, arg3) -> {
+                String garbage = (String) historyAdapter.getItem(index);
+                getTheGarbageMessageToIntent(garbage);
+            });
+        }
+
 
         //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)
         //垃圾分类api支持的城市
@@ -427,13 +430,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 // 多线程更新 UI
                 final String finalGarbageString = garbageString;
-                hd.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        getTheGarbageMessage(finalGarbageString);
-                    }
-                });
+                hd.post(() -> getTheGarbageMessage(finalGarbageString));
 
             }
 
@@ -631,9 +628,6 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void run() {
             super.run();
-
-            GarbageBean garbageBean = null;
-            JsonParser jp = new JsonParser();
 
             // 城市代码
             String garbageString = null;

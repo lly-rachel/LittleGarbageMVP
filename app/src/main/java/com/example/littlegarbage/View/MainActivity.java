@@ -8,13 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-
 import com.bumptech.glide.Glide;
-import com.example.littlegarbage.GarbageDataBase;
-import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,21 +38,19 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-//        DBManeger.initDB(this);
+
         mainSearch.setText("跳过 " + recLen);//最开始显示
 
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() { // UI thread
-                    @Override
-                    public void run() {
-                        recLen--;
-                        mainSearch.setText("跳过 " + recLen);
-                        if (recLen <= 0) {
-                            timer.cancel();
-                            mainSearch.setVisibility(View.GONE);//倒计时到0隐藏字体
-                        }
+                // UI thread
+                runOnUiThread(() -> {
+                    recLen--;
+                    mainSearch.setText("跳过 " + recLen);
+                    if (recLen <= 0) {
+                        timer.cancel();
+                        mainSearch.setVisibility(View.GONE);//倒计时到0隐藏字体
                     }
                 });
             }
@@ -67,14 +60,11 @@ public class MainActivity extends AppCompatActivity  {
 
         //正常情况下不点击跳过
         handler = new Handler();
-        handler.postDelayed(runnable = new Runnable() {
-            @Override
-            public void run() {
-                //从闪屏界面跳转到首界面
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        handler.postDelayed(runnable = () -> {
+            //从闪屏界面跳转到首界面
+            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+            startActivity(intent);
+            finish();
         }, 3000);//延迟3s后发送handler信息
 
     }
