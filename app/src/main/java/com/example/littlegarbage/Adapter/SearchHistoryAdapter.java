@@ -63,7 +63,10 @@ public class SearchHistoryAdapter extends BaseAdapter {
         holder.garbagenameTv.setText(name);
         holder.deleteIv.setOnClickListener(v -> {
             mDatas.remove(name);
-            garbageDataDao.deleteInfoByGarbage(name);
+            Thread thread=new Thread(()->{
+                garbageDataDao.deleteInfoByGarbage(name);
+            });
+            thread.start();
             notifyDataSetChanged();
         });
 

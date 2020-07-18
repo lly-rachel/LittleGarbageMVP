@@ -340,19 +340,16 @@ public class SearchActivity extends AppCompatActivity {
 
         Thread thread=new Thread(()->{
             garbagenameList = garbageDataDao.queryAllGarbageName();
+            if(garbagenameList!=null){
+                historyAdapter = new SearchHistoryAdapter(this, garbagenameList);
+                searchHistoryGv.setAdapter(historyAdapter);
+                searchHistoryGv.setOnItemClickListener((arg0, v, index, arg3) -> {
+                    String garbage = (String) historyAdapter.getItem(index);
+                    getTheGarbageMessageToIntent(garbage);
+                });
+            }
         });
         thread.start();
-
-
-        if(garbagenameList!=null){
-            historyAdapter = new SearchHistoryAdapter(this, garbagenameList);
-            searchHistoryGv.setAdapter(historyAdapter);
-            historyAdapter.notifyDataSetChanged();
-            searchHistoryGv.setOnItemClickListener((arg0, v, index, arg3) -> {
-                String garbage = (String) historyAdapter.getItem(index);
-                getTheGarbageMessageToIntent(garbage);
-            });
-        }
 
 
         //310000(上海市)、330200(宁波市)、610100(西安市)、440300(深圳市)、北京市(110000)

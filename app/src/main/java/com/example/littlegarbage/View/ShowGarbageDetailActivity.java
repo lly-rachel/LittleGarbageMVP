@@ -85,12 +85,14 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             ht.start();
         } else if (garbageInfoBean != null) {
             setDataBeanText(garbageInfoBean);
-
-            int i = garbageDataDao.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
-            if(i<=0){
-                GarbageData garbageData = new GarbageData(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
-                garbageDataDao.insertGarbageInfo(garbageData);
-            }
+            Thread thread = new Thread(()->{
+                int i = garbageDataDao.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+                if(i<=0){
+                    GarbageData garbageData = new GarbageData(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+                    garbageDataDao.insertGarbageInfo(garbageData);
+                }
+            });
+            thread.start();
 
         }
 
