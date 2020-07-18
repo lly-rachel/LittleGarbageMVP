@@ -10,8 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
+import com.example.littlegarbage.GarbageDataBase;
+import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.HttpUtil;
 import com.example.littlegarbage.Util.ShotShareUtil;
@@ -31,6 +34,8 @@ import butterknife.OnClick;
 
 public class ShowGarbageDetailActivity extends AppCompatActivity {
 
+
+    public GarbageDataDao garbageDataDao;
 
     Handler hd;
     String garbage = null;
@@ -59,7 +64,10 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_garbage_detail);
         ButterKnife.bind(this);
 
-        DBManeger.initDB(this);
+        GarbageDataBase garbageDataBase= Room.databaseBuilder(
+                this,GarbageDataBase.class,"garbage_database").build();
+        garbageDataDao=garbageDataBase.getGarbageDataDao();
+//        DBManeger.initDB(this);
 
         SearchActivity.open(ShowGarbageDetailActivity.this);
 
@@ -76,13 +84,19 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
             ht.start();
         } else if (garbageInfoBean != null) {
             setDataBeanText(garbageInfoBean);
-            //更新数据库信息
-            int i = DBManeger.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
-            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-            if (i <= 0) {
-                DBManeger.addGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
 
+            int i = garbageDataDao.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+            if(i<=0){
+                garbageDataDao.insertGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
             }
+
+//            //更新数据库信息
+////            int i = DBManeger.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+////            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+////            if (i <= 0) {
+////                DBManeger.addGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+////
+////            }
         }
 
     }
@@ -221,14 +235,18 @@ public class ShowGarbageDetailActivity extends AppCompatActivity {
 
             }
 
-            //更新数据库信息
-            int i = DBManeger.updateInfoByGarbage(garbage, garbageString);
-            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
-            if (i <= 0) {
-                DBManeger.addGarbageInfo(garbage, garbageString);
+//            //更新数据库信息
+//            int i = DBManeger.updateInfoByGarbage(garbage, garbageString);
+//            //更新数据库失败，说明数据库没有这个信息，添加这个城市天气信息
+//            if (i <= 0) {
+//                DBManeger.addGarbageInfo(garbage, garbageString);
+//
+//            }
 
+            int i = garbageDataDao.updateInfoByGarbage(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+            if(i<=0){
+                garbageDataDao.insertGarbageInfo(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
             }
-
         }
 
         private void setDataText(GarbageBean finalGb) {

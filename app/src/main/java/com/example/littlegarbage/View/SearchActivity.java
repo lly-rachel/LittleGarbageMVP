@@ -36,9 +36,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
 import com.example.littlegarbage.Adapter.SearchHistoryAdapter;
+import com.example.littlegarbage.GarbageDataBase;
+import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.AudioUtil;
 import com.example.littlegarbage.Util.GetHttpData;
@@ -119,11 +122,18 @@ public class SearchActivity extends AppCompatActivity {
 
     final static List<String> newdata = new ArrayList<>();
 
+    public GarbageDataDao garbageDataDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
+
+
+        GarbageDataBase garbageDataBase= Room.databaseBuilder(
+                this,GarbageDataBase.class,"garbage_database").build();
+        garbageDataDao=garbageDataBase.getGarbageDataDao();
 
         //隐藏软键盘
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -332,7 +342,8 @@ public class SearchActivity extends AppCompatActivity {
 
     private void initViews() {
 
-        garbagenameList = DBManeger.queryAllGarbageName();
+        garbagenameList = garbageDataDao.queryAllGarbageName();
+                //DBManeger.queryAllGarbageName();
 
         historyAdapter = new SearchHistoryAdapter(this, garbagenameList);
         searchHistoryGv.setAdapter(historyAdapter);

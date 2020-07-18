@@ -8,10 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
+import com.example.littlegarbage.GarbageDataBase;
+import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
-import com.example.littlegarbage.db.DBManeger;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,10 +26,13 @@ public class MainActivity extends AppCompatActivity  {
 
     @BindView(R.id.earth) ImageView earth;
     @BindView(R.id.main_search) TextView mainSearch;
+
     private int recLen = 0;//展示时间3秒
     Timer timer = new Timer();
     private Handler handler;
     private Runnable runnable;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +41,9 @@ public class MainActivity extends AppCompatActivity  {
         ButterKnife.bind(this);
         Glide.with(this).load(R.mipmap.start).into(earth);
 
-        DBManeger.initDB(this);
+
+
+//        DBManeger.initDB(this);
         mainSearch.setText("跳过 " + recLen);//最开始显示
 
         TimerTask task = new TimerTask() {

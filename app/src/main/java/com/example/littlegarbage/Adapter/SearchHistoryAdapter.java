@@ -8,7 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.room.Room;
+
+import com.example.littlegarbage.GarbageDataBase;
+import com.example.littlegarbage.GarbageDataDao;
 import com.example.littlegarbage.R;
+import com.example.littlegarbage.View.SearchActivity;
 import com.example.littlegarbage.db.DBManeger;
 
 import java.util.List;
@@ -43,6 +48,9 @@ public class SearchHistoryAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        GarbageDataBase garbageDataBase= Room.databaseBuilder(
+                context,GarbageDataBase.class,"garbage_database").build();
+        GarbageDataDao garbageDataDao=garbageDataBase.getGarbageDataDao();
 
         ViewHolder holder;
         if (convertView == null) {
@@ -56,7 +64,8 @@ public class SearchHistoryAdapter extends BaseAdapter {
         holder.garbagenameTv.setText(name);
         holder.deleteIv.setOnClickListener(v -> {
             mDatas.remove(name);
-            DBManeger.deleteInfoByGarbage(name);
+            garbageDataDao.deleteInfoByGarbage(name);
+            //DBManeger.deleteInfoByGarbage(name);
             notifyDataSetChanged();
         });
 

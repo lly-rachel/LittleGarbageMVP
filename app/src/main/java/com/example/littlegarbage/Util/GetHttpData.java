@@ -1,7 +1,5 @@
 package com.example.littlegarbage.Util;
 
-import org.json.JSONException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
