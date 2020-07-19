@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @BindView(R.id.earth) ImageView earth;
     @BindView(R.id.main_search) TextView mainSearch;
 
-    private int recLen = 0;//展示时间3秒
+    private int recLen = 3;//展示时间3秒
     Timer timer = new Timer();
     private Handler handler;
     private Runnable runnable;
@@ -38,8 +38,22 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         ButterKnife.bind(this);
         Glide.with(this).load(R.mipmap.start).into(earth);
 
+        mainPresenter = new MainPresenter(this);
+
         mainSearch.setText("跳过 " + recLen);//最开始显示
 
+        mainPresenter.loadData();
+
+    }
+
+
+    @OnClick(R.id.main_search)
+    public void onViewClicked() {
+        mainPresenter.clickPass();
+    }
+
+    @Override
+    public void onDataLoaded() {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -65,17 +79,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             startActivity(intent);
             finish();
         }, recLen*1000);//延迟3s后发送handler信息
-
-    }
-
-
-    @OnClick(R.id.main_search)
-    public void onViewClicked() {
-        mainPresenter.loadData();
     }
 
     @Override
-    public void onDataLoaded() {
+    public void clickPassFinished() {
         Intent intent = new Intent(this, SearchActivity.class);
         if (runnable != null) {
             handler.removeCallbacks(runnable);

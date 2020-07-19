@@ -12,4 +12,9 @@ public class MainPresenter implements MainContract.Presenter{
     public void loadData() {
         mView.onDataLoaded();
     }
+
+    @Override
+    public void clickPass() {
+        mView.clickPassFinished();
+    }
 }

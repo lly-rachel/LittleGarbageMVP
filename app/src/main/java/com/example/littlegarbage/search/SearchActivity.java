@@ -188,8 +188,8 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
                     audioUtil.stopRecord();
                     audioUtil.convertWaveFile();
                     showToastShort(this, "停止录音，获取信息中...");
-                    searchActivityPresenter.getSoundData(this,citydaima);
 
+                    searchActivityPresenter.getSoundData(this,citydaima);
 
                     isFirst = true;
                 }
