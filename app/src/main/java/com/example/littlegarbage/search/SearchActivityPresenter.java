@@ -59,7 +59,7 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
     @Override
-    public void getTakePictureData(String imgBase,String citydaima) {
+    public void getPictureData(String imgBase,String citydaima) {
         // 启用网络线程
         HttpThreadToGetPictureName ht = new HttpThreadToGetPictureName(imgBase,citydaima);
         ht.start();

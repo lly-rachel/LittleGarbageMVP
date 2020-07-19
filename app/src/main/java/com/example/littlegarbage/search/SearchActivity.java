@@ -120,7 +120,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
     final static List<String> newdata = new ArrayList<>();
 
-    public GarbageDataDao garbageDataDao;
+    GarbageDataDao garbageDataDao;
 
     private SearchActivityPresenter searchActivityPresenter;
 
@@ -134,7 +134,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
         GarbageDataBase garbageDataBase = Room.databaseBuilder(
                 this, GarbageDataBase.class, "garbage_database").build();
-        garbageDataDao = garbageDataBase.getGarbageDataDao();
+        garbageDataDao= garbageDataBase.getGarbageDataDao();
 
         //隐藏软键盘
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -187,8 +187,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
                     audioUtil.stopRecord();
                     audioUtil.convertWaveFile();
-                   showToastShort(this, "停止录音，获取信息中...");
-
+                    showToastShort(this, "停止录音，获取信息中...");
                     searchActivityPresenter.getSoundData(this,citydaima);
 
 
@@ -419,8 +418,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
         imgBase = PictureUtil.bitmaptoString(bm);//获取图像的Base64编码
         showToastShort(this, "获取信息中...");
-
-        searchActivityPresenter.getTakePictureData(imgBase, citydaima);
+        searchActivityPresenter.getPictureData(imgBase, citydaima);
 
     }
 
@@ -500,11 +498,14 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
                 joname = new JSONObject(finals);
 
                 JSONArray listArray = joname.getJSONArray("result");
-                for (int i = 0; i < listArray.length(); i++) {
-                    JSONArray NameArray = listArray.getJSONArray(i);
-                    String name = NameArray.getString(0);
-                    ImageNameList.add(name);
+                if(listArray!=null){
+                    for (int i = 0; i < listArray.length(); i++) {
+                        JSONArray NameArray = listArray.getJSONArray(i);
+                        String name = NameArray.getString(0);
+                        ImageNameList.add(name);
+                    }
                 }
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -607,7 +608,6 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
     }
 
 
-
     private void displayImage(String imagePath) {
         if (imagePath != null) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
@@ -617,16 +617,6 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
            showToastLong(this, "获取照片失败");
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
 }

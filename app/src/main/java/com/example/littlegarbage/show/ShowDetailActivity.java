@@ -38,7 +38,7 @@ import butterknife.OnClick;
 public class ShowDetailActivity extends AppCompatActivity implements ShowDetailActivityContract.View{
 
 
-    public GarbageDataDao garbageDataDao;
+
 
     Handler hd;
     String garbage = null;
@@ -71,12 +71,11 @@ public class ShowDetailActivity extends AppCompatActivity implements ShowDetailA
 
         GarbageDataBase garbageDataBase= Room.databaseBuilder(
                 this,GarbageDataBase.class,"garbage_database").build();
-        garbageDataDao=garbageDataBase.getGarbageDataDao();
 
 
         SearchActivity.open(ShowDetailActivity.this);
 
-        showDetailActivityPresenter = new ShowDetailActivityPresenter(this);
+        showDetailActivityPresenter = new ShowDetailActivityPresenter(this,garbageDataBase);
 
         Intent intent = getIntent();
         garbage = intent.getStringExtra("garbage");
@@ -89,12 +88,8 @@ public class ShowDetailActivity extends AppCompatActivity implements ShowDetailA
             showDetailActivityPresenter.loadData(garbage,citydaima);
 
         } else if (garbageInfoBean != null) {
-            setDataBeanText(garbageInfoBean);
-            Thread thread = new Thread(()->{
-                loadDB(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
 
-            });
-            thread.start();
+            showDetailActivityPresenter.loadData(garbageInfoBean);
 
         }
 
@@ -182,11 +177,13 @@ public class ShowDetailActivity extends AppCompatActivity implements ShowDetailA
     @Override
     public void getDataOnSucceed(GarbageBean garbageBean,String garbage,String garbageString) {
 
+
         Thread thread = new Thread(()->{
             Looper.prepare();
+
             // 多线程更新 UI
             hd.post(() -> setDataText(garbageBean));
-            loadDB(garbage,garbageString);
+
             Looper.loop();
         });
         thread.start();
@@ -195,11 +192,15 @@ public class ShowDetailActivity extends AppCompatActivity implements ShowDetailA
     }
 
     @Override
+    public void getDataOnSucceed(GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean) {
+        setDataBeanText(garbageInfoBean);
+    }
+
+    @Override
     public void getDataOnFailed(String garbage,String garbageString) {
+
         Thread thread = new Thread(()->{
             Looper.prepare();
-            loadDB(garbage,garbageString);
-
             Toast.makeText(this,"数据获取失败",Toast.LENGTH_LONG).show();
             Looper.loop();
         });
@@ -257,12 +258,4 @@ public class ShowDetailActivity extends AppCompatActivity implements ShowDetailA
         return new DecimalFormat("0.00").format(num);
     }
 
-    private void loadDB(String garbage,String garbageString){
-        int i = garbageDataDao.updateInfoByGarbage(garbage, garbageString);
-
-        if (i <= 0) {
-            GarbageData garbageData = new GarbageData(garbage, garbageString);
-            garbageDataDao.insertGarbageInfo(garbageData);
-        }
-    }
 }

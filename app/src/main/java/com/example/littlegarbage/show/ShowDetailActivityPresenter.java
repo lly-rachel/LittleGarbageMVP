@@ -1,10 +1,13 @@
 package com.example.littlegarbage.show;
 
+import android.os.Looper;
+
 import androidx.room.Room;
 
 import com.example.littlegarbage.model.bean.GarbageBean;
 import com.example.littlegarbage.model.db.GarbageData;
 import com.example.littlegarbage.model.db.GarbageDataBase;
+import com.example.littlegarbage.model.db.GarbageDataDao;
 import com.example.littlegarbage.utils.HttpUtil;
 import com.example.littlegarbage.utils.JsonParser;
 
@@ -16,9 +19,12 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
 
     ShowDetailActivityContract.View mView;
 
+    GarbageDataDao garbageDataDao;
 
-    public ShowDetailActivityPresenter(ShowDetailActivityContract.View mView) {
+
+    public ShowDetailActivityPresenter(ShowDetailActivityContract.View mView,GarbageDataBase garbageDataBase) {
         this.mView = mView;
+        this.garbageDataDao = garbageDataBase.getGarbageDataDao();
     }
 
     @Override
@@ -26,6 +32,23 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
         // 启用网络线程
         HttpThread ht = new HttpThread(garbage,citydaima);
         ht.start();
+    }
+
+    @Override
+    public void loadData(GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean) {
+
+
+        Thread thread = new Thread(()->{
+//            Looper.prepare();
+//
+//            loadDB(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+//
+//            Looper.loop();
+            loadDB(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
+        });
+        thread.start();
+        mView.getDataOnSucceed(garbageInfoBean);
+
     }
 
     @Override
@@ -76,8 +99,17 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
                 mView.getDataOnFailed(garbage,garbageString);
 
             }
+            loadDB(garbage,garbageString);
 
+        }
+    }
 
+    private void loadDB(String garbage,String garbageString){
+        int i = garbageDataDao.updateInfoByGarbage(garbage, garbageString);
+
+        if (i <= 0) {
+            GarbageData garbageData = new GarbageData(garbage, garbageString);
+            garbageDataDao.insertGarbageInfo(garbageData);
         }
     }
 }
