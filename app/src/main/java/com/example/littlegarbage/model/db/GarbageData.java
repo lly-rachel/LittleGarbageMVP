@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Model.db;
+package com.example.littlegarbage.model.db;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

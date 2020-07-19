@@ -1,4 +1,4 @@
-package com.example.littlegarbage.View.adapter;
+package com.example.littlegarbage.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

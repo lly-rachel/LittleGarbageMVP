@@ -1,4 +1,4 @@
-package com.example.littlegarbage.View.adapter;
+package com.example.littlegarbage.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import androidx.room.Room;
 
-import com.example.littlegarbage.Model.db.GarbageDataBase;
-import com.example.littlegarbage.Model.db.GarbageDataDao;
+import com.example.littlegarbage.model.db.GarbageDataBase;
+import com.example.littlegarbage.model.db.GarbageDataDao;
 import com.example.littlegarbage.R;
 
 import java.util.List;

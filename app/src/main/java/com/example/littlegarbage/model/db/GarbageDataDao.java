@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Model.db;
+package com.example.littlegarbage.model.db;
 
 import androidx.room.Dao;
 import androidx.room.Insert;

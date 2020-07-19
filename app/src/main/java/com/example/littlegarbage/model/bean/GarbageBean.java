@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Model;
+package com.example.littlegarbage.model.bean;
 
 import java.io.Serializable;
 import java.util.List;

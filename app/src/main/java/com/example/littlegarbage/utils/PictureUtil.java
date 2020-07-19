@@ -1,7 +1,8 @@
-package com.example.littlegarbage.Util;
+package com.example.littlegarbage.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.util.Base64;
 
 import java.io.ByteArrayInputStream;

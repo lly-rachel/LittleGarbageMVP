@@ -1,4 +1,4 @@
-package com.example.littlegarbage.Util;
+package com.example.littlegarbage.utils;
 
 import android.content.Context;
 import android.content.Intent;

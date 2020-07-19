@@ -1,4 +1,4 @@
-package com.example.littlegarbage.View.activity;
+package com.example.littlegarbage.home;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.littlegarbage.R;
+import com.example.littlegarbage.search.SearchActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements MainContract.View{
 
     @BindView(R.id.earth) ImageView earth;
     @BindView(R.id.main_search) TextView mainSearch;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity  {
     Timer timer = new Timer();
     private Handler handler;
     private Runnable runnable;
-
+    private MainPresenter mainPresenter;
 
 
     @Override
@@ -36,9 +37,6 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         Glide.with(this).load(R.mipmap.start).into(earth);
-
-
-
 
         mainSearch.setText("跳过 " + recLen);//最开始显示
 
@@ -66,13 +64,18 @@ public class MainActivity extends AppCompatActivity  {
             Intent intent = new Intent(MainActivity.this, SearchActivity.class);
             startActivity(intent);
             finish();
-        }, 3000);//延迟3s后发送handler信息
+        }, recLen*1000);//延迟3s后发送handler信息
 
     }
 
 
     @OnClick(R.id.main_search)
     public void onViewClicked() {
+        mainPresenter.loadData();
+    }
+
+    @Override
+    public void onDataLoaded() {
         Intent intent = new Intent(this, SearchActivity.class);
         if (runnable != null) {
             handler.removeCallbacks(runnable);
