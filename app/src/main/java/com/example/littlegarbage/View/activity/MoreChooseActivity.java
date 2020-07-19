@@ -1,10 +1,9 @@
-package com.example.littlegarbage.View;
+package com.example.littlegarbage.View.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.littlegarbage.Adapter.CityAdapter;
+import com.example.littlegarbage.View.adapter.CityAdapter;
 import com.example.littlegarbage.R;
 
 import java.io.File;

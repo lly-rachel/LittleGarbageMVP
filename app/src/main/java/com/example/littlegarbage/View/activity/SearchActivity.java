@@ -1,4 +1,4 @@
-package com.example.littlegarbage.View;
+package com.example.littlegarbage.View.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -37,16 +37,16 @@ import androidx.core.content.FileProvider;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
-import com.example.littlegarbage.Adapter.SearchHistoryAdapter;
-import com.example.littlegarbage.GarbageDataBase;
-import com.example.littlegarbage.GarbageDataDao;
+import com.example.littlegarbage.View.adapter.SearchHistoryAdapter;
+import com.example.littlegarbage.Model.db.GarbageDataBase;
+import com.example.littlegarbage.Model.db.GarbageDataDao;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.AudioUtil;
 import com.example.littlegarbage.Util.GetHttpData;
 import com.example.littlegarbage.Util.HttpUtil;
 import com.example.littlegarbage.Util.PictureUtil;
-import com.example.littlegarbage.bean.GarbageBean;
-import com.example.littlegarbage.db.JsonParser;
+import com.example.littlegarbage.Model.GarbageBean;
+import com.example.littlegarbage.Util.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;

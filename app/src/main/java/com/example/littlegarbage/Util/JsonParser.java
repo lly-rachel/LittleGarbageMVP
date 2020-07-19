@@ -1,6 +1,6 @@
-package com.example.littlegarbage.db;
+package com.example.littlegarbage.Util;
 
-import com.example.littlegarbage.bean.GarbageBean;
+import com.example.littlegarbage.Model.GarbageBean;
 import com.google.gson.Gson;
 
 public class JsonParser {

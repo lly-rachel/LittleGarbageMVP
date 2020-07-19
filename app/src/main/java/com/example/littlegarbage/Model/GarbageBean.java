@@ -1,7 +1,4 @@
-package com.example.littlegarbage.bean;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+package com.example.littlegarbage.Model;
 
 import java.io.Serializable;
 import java.util.List;

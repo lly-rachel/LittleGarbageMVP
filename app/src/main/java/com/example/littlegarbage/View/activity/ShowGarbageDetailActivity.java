@@ -1,4 +1,4 @@
-package com.example.littlegarbage.View;
+package com.example.littlegarbage.View.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,18 +10,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Database;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
-import com.example.littlegarbage.GarbageData;
-import com.example.littlegarbage.GarbageDataBase;
-import com.example.littlegarbage.GarbageDataDao;
+import com.example.littlegarbage.Model.db.GarbageData;
+import com.example.littlegarbage.Model.db.GarbageDataBase;
+import com.example.littlegarbage.Model.db.GarbageDataDao;
 import com.example.littlegarbage.R;
 import com.example.littlegarbage.Util.HttpUtil;
 import com.example.littlegarbage.Util.ShotShareUtil;
-import com.example.littlegarbage.bean.GarbageBean;
-import com.example.littlegarbage.db.JsonParser;
+import com.example.littlegarbage.Model.GarbageBean;
+import com.example.littlegarbage.Util.JsonParser;
 
 import org.json.JSONException;
 
