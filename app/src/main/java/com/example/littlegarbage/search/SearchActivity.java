@@ -418,7 +418,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
         Bitmap bm = PictureUtil.compressScale(bitmap);//压缩图片
 
         imgBase = PictureUtil.bitmaptoString(bm);//获取图像的Base64编码
-        showToastShort(this, "获取信息中...请耐心等待");
+        showToastShort(this, "获取信息中...");
 
         searchActivityPresenter.getTakePictureData(imgBase, citydaima);
 
