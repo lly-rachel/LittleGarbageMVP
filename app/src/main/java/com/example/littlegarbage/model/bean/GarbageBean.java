@@ -189,4 +189,15 @@ public class GarbageBean {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "GarbageBean{" +
+                "code='" + code + '\'' +
+                ", charge=" + charge +
+                ", remain=" + remain +
+                ", msg='" + msg + '\'' +
+                ", result=" + result +
+                '}';
+    }
 }
