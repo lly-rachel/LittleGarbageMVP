@@ -1,12 +1,14 @@
 package com.example.littlegarbage.retrofit;
 
-
-
 import java.util.Map;
 
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -18,13 +20,14 @@ public interface RetrofitService {
     @GET("index")
     Call<ResponseBody> getHotHistory(@Query("key") String key);
 
-//    //联想词
-//    //"https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477&content=s";
-//    @GET("api_suggest.ashx")
-//    Call<ResponseBody> getImageData(@Query("appkey") String appkey,@Query("content") String content);
+    //联想词
+    //"https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477&content=s";
+    @GET("api_suggest.ashx")
+    Call<ResponseBody> getImageData(@Query("appkey") String appkey, @Query("content") String content);
 
     //获取文本信息
 
-
-
+    @Headers("Content-Type:application/json;charset=UTF-8")
+    @POST("garbageTextSearch")
+    Call<ResponseBody> getTextData(@QueryMap Map<String,String> map, @Body RequestBody requestbody);
 }

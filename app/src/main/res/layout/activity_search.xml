@@ -63,6 +63,7 @@
         android:layout_toLeftOf="@+id/garbage_search"
         android:hint="搜索垃圾分类信息"
         android:background="@drawable/stroketext"
+        android:inputType="textNoSuggestions"
         />
 
     </RelativeLayout>

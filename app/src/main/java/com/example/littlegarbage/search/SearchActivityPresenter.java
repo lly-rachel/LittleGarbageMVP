@@ -5,13 +5,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Looper;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.example.littlegarbage.model.bean.GarbageBean;
 import com.example.littlegarbage.retrofit.RetrofitHelper;
-import com.example.littlegarbage.retrofit.helper;
-import com.example.littlegarbage.utils.GetHttpData;
 import com.example.littlegarbage.utils.HttpUtil;
 import com.example.littlegarbage.utils.JsonParser;
 
@@ -19,7 +15,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -46,11 +41,11 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
     @Override
-    public void getHotSearchData(Context context,String hotHistoryURL,String hotHistoryKey) {
+    public void getHotSearchData(String hotHistoryURL,String hotHistoryKey) {
 
         //https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa
         /*获取热门搜索数据*/
-        RetrofitHelper.getInstance(context,hotHistoryURL).getHotHistory(hotHistoryKey)
+        RetrofitHelper.getInstance(hotHistoryURL).getHotHistory(hotHistoryKey)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -70,36 +65,32 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
                 });
     }
 
-//    @Override
-//    public void getImageData(Context context, String imageNameURL, String appkey, String content) {
-//
-//        RetrofitHelper.getInstance(context,imageNameURL).getImageData(appkey,content)
-//                .enqueue(new Callback<ResponseBody>() {
-//                    @Override
-//                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                        String  result = null;
-//                        try {
-//                            result = response.body().string();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        mView.getImageDataOnSucceed(result);
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                        mView.getDataOnFailed();
-//                        Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//    }
-
     @Override
-    public void getImageData(String imageUrl) {
-        //网络请求
-        HttpThreadToGetImageData httpThreadToGetImageData = new HttpThreadToGetImageData(imageUrl);
-        httpThreadToGetImageData.start();
+    public void getImageData(String imageNameURL, String appkey, String content) {
+
+        //获取联想词数据
+        RetrofitHelper.getInstance(imageNameURL).getImageData(appkey,content)
+                    .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        String  result = null;
+                        try {
+                            result = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        mView.getImageDataOnSucceed(result);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        mView.getDataOnFailed();
+                    }
+                });
+
+
     }
+
 
     @Override
     public void getSoundData(Context context,String citydaima) {
@@ -117,28 +108,6 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
 
-    /*获取联想词数据*/
-    public class HttpThreadToGetImageData extends Thread {
-
-        String imageUrl;
-
-        public HttpThreadToGetImageData(String imageUrl) {
-            this.imageUrl = imageUrl;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            try {
-                String imageData = GetHttpData.GetHotData(imageUrl);
-                mView.getImageDataOnSucceed(imageData);
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /*网络请求，获取语音识别的数据*/
     public class HttpThreadToGetSoundName extends Thread {
