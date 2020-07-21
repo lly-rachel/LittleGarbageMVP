@@ -14,7 +14,7 @@ public interface SearchActivityContract {
         void getHotSearchData(String hotHistoryURL,String hotHistoryKey);
         void getImageData(String imageNameURL,String appkey,String content);
 //        void getImageData(String imageUrl);
-        void getSoundData(Context context,String citydaima);
+        void getSoundData(Context context, String citydaima);
         void getPictureData(String imgBase,String citydaima);
     }
 

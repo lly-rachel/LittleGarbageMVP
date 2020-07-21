@@ -18,7 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.littlegarbage.utils.HttpUtil.getMD5;
+import static com.example.littlegarbage.utils.getMD5Util.getMD5;
 
 public class ShowDetailActivityPresenter implements ShowDetailActivityContract.Presenter{
 

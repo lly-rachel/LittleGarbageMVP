@@ -15,19 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
-import com.example.littlegarbage.model.db.GarbageData;
 import com.example.littlegarbage.model.db.GarbageDataBase;
-import com.example.littlegarbage.model.db.GarbageDataDao;
 import com.example.littlegarbage.R;
-import com.example.littlegarbage.utils.HttpUtil;
 import com.example.littlegarbage.utils.ShotShareUtil;
 import com.example.littlegarbage.model.bean.GarbageBean;
-import com.example.littlegarbage.utils.JsonParser;
 import com.example.littlegarbage.search.SearchActivity;
 
-import org.json.JSONException;
-
-import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.List;
 

@@ -4,10 +4,12 @@ import android.content.Context;
 
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
 
 import okhttp3.ConnectionSpec;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -17,6 +19,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.Part;
 
 public class RetrofitHelper {
 
@@ -73,5 +76,15 @@ public class RetrofitHelper {
     //文本搜索
     public Call<ResponseBody> getTextData(Map<String,String> map, RequestBody requestbody){
         return getServer().getTextData (map, requestbody);
+    }
+
+    //图片搜索
+    public Call<ResponseBody> getPictureData(Map<String,String> map, RequestBody requestbody){
+        return getServer().getPictureData (map, requestbody);
+    }
+
+    //音频搜索
+    public Call<ResponseBody> getSoundData(Map<String,String> map, MultipartBody.Part file){
+        return getServer().getSoundData (map, file);
     }
 }
