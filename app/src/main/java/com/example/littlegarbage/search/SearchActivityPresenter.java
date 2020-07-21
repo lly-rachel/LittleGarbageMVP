@@ -8,14 +8,20 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.example.littlegarbage.model.bean.GarbageBean;
+import com.example.littlegarbage.retrofit.RetrofitHelper;
 import com.example.littlegarbage.utils.GetHttpData;
 import com.example.littlegarbage.utils.HttpUtil;
 import com.example.littlegarbage.utils.JsonParser;
 
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SearchActivityPresenter implements SearchActivityContract.Presenter {
 
@@ -37,10 +43,27 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
     @Override
-    public void getHotSearchData(String hotSearchHistoryURL) {
-        // 启用网络线程
-        HttpThreadToGetData ht = new HttpThreadToGetData(hotSearchHistoryURL);
-        ht.start();
+    public void getHotSearchData(Context context,String hotHistoryURL,String hotHistoryKey) {
+
+        /*获取热门搜索数据*/
+        RetrofitHelper.getInstance(context,hotHistoryURL).getHotHistory(hotHistoryKey)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        String  result = null;
+                        try {
+                            result = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        mView.getDataOnSucceed(result);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        mView.getDataOnFailed();
+                    }
+                });
     }
 
     @Override
@@ -65,31 +88,6 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
         ht.start();
     }
 
-
-
-    /*获取热门搜索数据*/
-    public class HttpThreadToGetData extends Thread {
-
-        String hotSearchHistoryURL;
-
-        public HttpThreadToGetData(String hotSearchHistoryURL) {
-            this.hotSearchHistoryURL = hotSearchHistoryURL;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            try {
-                String data = GetHttpData.GetHotData(hotSearchHistoryURL);
-
-                mView.getDataOnSucceed(data);
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /*获取联想词数据*/
     public class HttpThreadToGetImageData extends Thread {
