@@ -1,13 +1,8 @@
 package com.example.littlegarbage.retrofit;
 
-import android.content.Context;
-
 import com.google.gson.GsonBuilder;
-
-import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
-
 import okhttp3.ConnectionSpec;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -18,8 +13,6 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.Part;
 
 public class RetrofitHelper {
 

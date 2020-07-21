@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -83,7 +82,6 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
     private ArrayAdapter<String> arrayAdapter;
 
     String Imagename;
-    String imageUrl;
 
     Handler hd;
 

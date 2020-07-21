@@ -1,6 +1,5 @@
 package com.example.littlegarbage.utils;
 
-
 import android.text.TextUtils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

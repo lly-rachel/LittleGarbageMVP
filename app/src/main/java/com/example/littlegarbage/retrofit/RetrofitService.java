@@ -1,8 +1,6 @@
 package com.example.littlegarbage.retrofit;
 
-import java.io.File;
 import java.util.Map;
-
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.littlegarbage.adapter.CityAdapter;
 

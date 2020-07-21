@@ -11,10 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.littlegarbage.home.MainContract;
 import com.example.littlegarbage.search.SearchActivity;
-import com.example.littlegarbage.adapter.CityAdapter;
 import com.example.littlegarbage.R;
 
 import java.io.File;

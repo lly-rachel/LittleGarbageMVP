@@ -30,9 +30,6 @@ import butterknife.OnClick;
 
 public class ShowDetailActivity extends AppCompatActivity implements ShowDetailActivityContract.View{
 
-
-
-
     Handler hd;
     String garbage = null;
     GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean = null;
