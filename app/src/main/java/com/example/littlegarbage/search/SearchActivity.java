@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -116,7 +117,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
     static String citydaima = null;
 
 //    final static String hotSearchHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
-    final static String imageNameURL = "https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477";
+    final static String imageNameURL = "https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477&content=s";
 
     final static String hotHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/";
     final static String hotHistoryKey = "2fb9da721d164cdc0a45b990545796fa";
@@ -486,13 +487,6 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
     }
 
-    /*根据输入的文本 传入content参数*/
-    private void GetImageData(String content) {
-
-        imageUrl = imageNameURL + "&content=" + content;
-        searchActivityPresenter.getImageData(imageUrl);
-
-    }
 
     /*解析联想词数据*/
     private void setImageData(String finals) {
@@ -578,7 +572,10 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
                 try {
                     Imagename = URLEncoder.encode(name, "UTF-8");
-                    GetImageData(Imagename);
+
+                    imageUrl = imageNameURL + "&content=" + Imagename;
+ //                   searchActivityPresenter.getImageData(SearchActivity.this,imageNameURL,imageAppkey,Imagename);
+                    searchActivityPresenter.getImageData(imageUrl);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

@@ -10,15 +10,14 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetrofitHelper {
-
+public class helper {
     private Context context;
     private String url;
 
     private static RetrofitHelper instance = null;
     private Retrofit retrofit = null;
 
-    public RetrofitHelper(Context context, String url) {
+    public helper(Context context, String url) {
         this.context = context;
         this.url = url;
         retrofit = new Retrofit.Builder()
@@ -31,24 +30,21 @@ public class RetrofitHelper {
     }
 
 
-    public static RetrofitHelper getInstance(Context context,String url){
+    public static RetrofitHelper getInstance(Context context, String url){
         if(instance==null){
             instance = new RetrofitHelper(context,url);
         }
         return instance;
     }
 
-    public RetrofitService getServer(){
-        return retrofit.create(RetrofitService.class);
+    public service getServer(){
+        return  retrofit.create(service.class);
     }
 
-    //热门搜索
-    public Call<ResponseBody> getHotHistory(String key){
-        return getServer().getHotHistory(key);
-    }
 
-//    //联想词
-//    public Call<ResponseBody> getImageData(String imageNameKey, String content){
-//        return getServer().getImageData(imageNameKey,content);
-//    }
+
+    //联想词
+    public Call<ResponseBody> getImageData(String imageNameKey, String content){
+        return getServer().getImageData(imageNameKey,content);
+    }
 }

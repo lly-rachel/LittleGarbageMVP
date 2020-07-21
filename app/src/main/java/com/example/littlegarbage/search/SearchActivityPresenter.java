@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.littlegarbage.model.bean.GarbageBean;
 import com.example.littlegarbage.retrofit.RetrofitHelper;
+import com.example.littlegarbage.retrofit.helper;
 import com.example.littlegarbage.utils.GetHttpData;
 import com.example.littlegarbage.utils.HttpUtil;
 import com.example.littlegarbage.utils.JsonParser;
@@ -18,6 +19,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -68,7 +70,29 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
                 });
     }
 
-
+//    @Override
+//    public void getImageData(Context context, String imageNameURL, String appkey, String content) {
+//
+//        RetrofitHelper.getInstance(context,imageNameURL).getImageData(appkey,content)
+//                .enqueue(new Callback<ResponseBody>() {
+//                    @Override
+//                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                        String  result = null;
+//                        try {
+//                            result = response.body().string();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                        mView.getImageDataOnSucceed(result);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                        mView.getDataOnFailed();
+//                        Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//    }
 
     @Override
     public void getImageData(String imageUrl) {

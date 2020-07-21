@@ -14,7 +14,7 @@ public interface RetrofitService {
     //Get Post请求接口
 
     //热门搜索
-    // final static String hotSearchHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
+    // "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
     @GET("index")
     Call<ResponseBody> getHotHistory(@Query("key") String key);
 
@@ -24,7 +24,7 @@ public interface RetrofitService {
 //    Call<ResponseBody> getImageData(@Query("appkey") String appkey,@Query("content") String content);
 
     //获取文本信息
-    //
+
 
 
 }
