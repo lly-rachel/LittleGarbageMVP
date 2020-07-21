@@ -2,9 +2,16 @@ package com.example.littlegarbage.retrofit;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.GsonBuilder;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -24,10 +31,6 @@ public class RetrofitHelper {
     public RetrofitHelper(Context context, String url) {
         this.context = context;
         this.url = url;
-        initRetrofit();
-    }
-
-    private void initRetrofit() {
         retrofit = new Retrofit.Builder()
                 //热门搜索 url="https://api.tianapi.com/txapi/hotlajifenlei/"
                 .baseUrl(url)
@@ -37,18 +40,22 @@ public class RetrofitHelper {
                 .build();
     }
 
+
     public static RetrofitHelper getInstance(Context context,String url){
-        if(instance == null){
-            instance = new RetrofitHelper(context,url);
-        }
-        return instance;
+        return new RetrofitHelper(context,url);
     }
 
     public RetrofitService getServer(){
         return retrofit.create(RetrofitService.class);
     }
 
+    //热门搜索
     public Call<ResponseBody> getHotHistory(String key){
         return getServer().getHotHistory(key);
     }
+
+//    //联想词
+//    public Call<ResponseBody> getImageData( String imageNameKey, String content){
+//        return getServer().getImageData(imageNameKey,content);
+//    }
 }

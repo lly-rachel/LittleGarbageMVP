@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @BindView(R.id.earth) ImageView earth;
     @BindView(R.id.main_search) TextView mainSearch;
 
-    private int recLen = 3;//展示时间3秒
+    private int recLen = 0;//展示时间3秒
     Timer timer = new Timer();
     private Handler handler;
     private Runnable runnable;

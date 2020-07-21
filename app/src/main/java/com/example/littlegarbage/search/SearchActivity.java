@@ -115,11 +115,15 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
     static String cityname = null;
     static String citydaima = null;
 
-    final static String hotSearchHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
+//    final static String hotSearchHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa";
     final static String imageNameURL = "https://api.zhetaoke.com:10001/api/api_suggest.ashx?appkey=3982f6785fcd4b54a214c69f4c167477";
 
     final static String hotHistoryURL = "https://api.tianapi.com/txapi/hotlajifenlei/";
     final static String hotHistoryKey = "2fb9da721d164cdc0a45b990545796fa";
+
+//    final static String imageNameURL = "https://api.zhetaoke.com:10001/api/";
+//    final static String imageAppkey = "3982f6785fcd4b54a214c69f4c167477";
+
     final static List<String> newdata = new ArrayList<>();
 
     GarbageDataDao garbageDataDao;
@@ -483,9 +487,9 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
     }
 
     /*根据输入的文本 传入content参数*/
-    private void GetImageData(String name) {
+    private void GetImageData(String content) {
 
-        imageUrl = imageNameURL + "&content=" + name;
+        imageUrl = imageNameURL + "&content=" + content;
         searchActivityPresenter.getImageData(imageUrl);
 
     }

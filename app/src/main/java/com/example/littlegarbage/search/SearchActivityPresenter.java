@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.littlegarbage.model.bean.GarbageBean;
@@ -45,6 +46,7 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     @Override
     public void getHotSearchData(Context context,String hotHistoryURL,String hotHistoryKey) {
 
+        //https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa
         /*获取热门搜索数据*/
         RetrofitHelper.getInstance(context,hotHistoryURL).getHotHistory(hotHistoryKey)
                 .enqueue(new Callback<ResponseBody>() {
@@ -65,6 +67,8 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
                     }
                 });
     }
+
+
 
     @Override
     public void getImageData(String imageUrl) {
