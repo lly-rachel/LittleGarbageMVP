@@ -1,30 +1,17 @@
 package com.example.littlegarbage.show;
 
-import android.os.Looper;
-
-import androidx.room.Room;
-
 import com.example.littlegarbage.model.bean.GarbageBean;
 import com.example.littlegarbage.model.db.GarbageData;
 import com.example.littlegarbage.model.db.GarbageDataBase;
 import com.example.littlegarbage.model.db.GarbageDataDao;
 import com.example.littlegarbage.retrofit.RetrofitHelper;
-import com.example.littlegarbage.utils.HttpUtil;
 import com.example.littlegarbage.utils.JsonParser;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -48,11 +35,7 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
 
     @Override
     public void loadData(String garbage,String citydaima) {
-//        // 启用网络线程
-//        HttpThread ht = new HttpThread(garbage,citydaima);
-//        ht.start();
-
-
+        /*根据garbage获取具体信息*/
         if(citydaima==null){
             citydaima=String.valueOf(310000);
         }
@@ -65,20 +48,11 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
             e.printStackTrace();
         }
 
+        // 城市代码
+        final String[] garbageString = {null};
 
-
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(7000, TimeUnit.SECONDS)
-                .writeTimeout(7000, TimeUnit.SECONDS)
-                .readTimeout(7000, TimeUnit.SECONDS)
-                .build();
-
-        String url1 = "https://aiapi.jd.com/jdai/garbageTextSearch?appkey=f08733d22c104e5dc39f97a323359da9&timestamp=";
         long time = System.currentTimeMillis();
         String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
-        String urls = url1 + time + "&sign=" + s1;
-
-        URL url = new URL(urls);
 
         RequestBody body = RequestBody.create(JSON, String.valueOf(json));
 
@@ -87,30 +61,44 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
         map.put("timestamp",String.valueOf(time));
         map.put("sign",s1);
 
-        RetrofitHelper.getInstance(context,hotHistoryURL).getHotHistory(hotHistoryKey)
+        RetrofitHelper.getInstance("https://aiapi.jd.com/jdai/").getTextData(map,body)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        String  result = null;
+
                         try {
-                            result = response.body().string();
+                            garbageString[0] = response.body().string();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        mView.getDataOnSucceed(result);
-                    }
 
+                        JsonParser jp = new JsonParser();
+                        GarbageBean garbageBean = jp.GarbageParse(garbageString[0]);
+                        if (garbageBean != null) {
+                            //获取数据成功
+                            mView.getDataOnSucceed(garbageBean,garbage, garbageString[0]);
+
+                        } else {
+                            // 获取失败 也保存到数据库，确保历史记录也有这条非法输入，但点击时只显示空信息界面
+                            garbageString[0] = "数据获取错误";
+                            mView.getDataOnFailed(garbage, garbageString[0]);
+                        }
+                    }
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        mView.getDataOnFailed();
+                        garbageString[0] = "数据获取错误";
+                        mView.getDataOnFailed(garbage, garbageString[0]);
                     }
                 });
+
+        new Thread(()->{
+            loadDB(garbage, garbageString[0]);
+        }).start();
 
     }
 
     @Override
     public void loadData(GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean) {
-
 
         Thread thread = new Thread(()->{
             loadDB(garbageInfoBean.getGarbage_name(), garbageInfoBean.toString());
@@ -128,49 +116,6 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
     @Override
     public void share() {
         mView.shareFinished();
-    }
-
-    /*根据garbage获取具体信息*/
-    public class HttpThread extends Thread {
-
-        String garbage;
-        String citydaima;
-
-        public HttpThread(String garbage,String citydaima) {
-            this.garbage = garbage;
-            this.citydaima = citydaima;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            GarbageBean garbageBean = null;
-            JsonParser jp = new JsonParser();
-
-            // 城市代码
-            String garbageString = null;
-            try {
-
-                garbageString = HttpUtil.sendOkHttpRequest(garbage, citydaima);
-                // 调用自定义的 JSON 解析类解析获取的 JSON 数据
-                garbageBean = jp.GarbageParse(garbageString);
-            } catch (JSONException | MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            if (garbageBean != null) {
-                //获取数据成功
-                mView.getDataOnSucceed(garbageBean,garbage,garbageString);
-
-            } else {
-                // 获取失败 也保存到数据库，确保历史记录也有这条非法输入，但点击时只显示空信息界面
-                garbageString = "数据获取错误";
-                mView.getDataOnFailed(garbage,garbageString);
-
-            }
-            loadDB(garbage,garbageString);
-
-        }
     }
 
     private void loadDB(String garbage,String garbageString){
