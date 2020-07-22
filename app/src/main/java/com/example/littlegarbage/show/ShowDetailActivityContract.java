@@ -1,5 +1,7 @@
 package com.example.littlegarbage.show;
 
+import android.content.Context;
+
 import com.example.littlegarbage.model.bean.GarbageBean;
 
 import java.net.MalformedURLException;
@@ -7,7 +9,7 @@ import java.net.MalformedURLException;
 public interface ShowDetailActivityContract {
 
     interface Presenter{
-        void loadData(String garbage,String garbageString) throws MalformedURLException;
+        void loadData(Context context, String garbage, String garbageString) throws MalformedURLException;
         void loadData(GarbageBean.ResultBean.GarbageInfoBean garbageInfoBean);
         void clickSure();
         void share();

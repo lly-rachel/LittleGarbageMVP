@@ -1,8 +1,13 @@
 package com.example.littlegarbage.retrofit;
 
+import android.content.Context;
+
+import com.example.littlegarbage.model.bean.GarbageBean;
 import com.google.gson.GsonBuilder;
 import java.util.Arrays;
 import java.util.Map;
+
+import io.reactivex.Observable;
 import okhttp3.ConnectionSpec;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -17,11 +22,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitHelper {
 
     private String url;
+    private Context context;
 
     private static RetrofitHelper instance = null;
     private Retrofit retrofit = null;
 
-    public RetrofitHelper(String url) {
+    public RetrofitHelper(Context context,String url) {
+        this.context=context;
         this.url = url;
         initRetrofit();
     }
@@ -48,8 +55,8 @@ public class RetrofitHelper {
                 .build();
     }
 
-    public static RetrofitHelper getInstance(String url){
-        return new RetrofitHelper(url);
+    public static RetrofitHelper getInstance(Context context,String url){
+        return new RetrofitHelper(context,url);
     }
 
     public RetrofitService getServer(){
@@ -67,17 +74,17 @@ public class RetrofitHelper {
     }
 
     //文本搜索
-    public Call<ResponseBody> getTextData(Map<String,String> map, RequestBody requestbody){
+    public Observable<GarbageBean>  getTextData(Map<String,String> map, RequestBody requestbody){
         return getServer().getTextData (map, requestbody);
     }
 
     //图片搜索
-    public Call<ResponseBody> getPictureData(Map<String,String> map, RequestBody requestbody){
+    public Observable<GarbageBean> getPictureData(Map<String,String> map, RequestBody requestbody){
         return getServer().getPictureData (map, requestbody);
     }
 
     //音频搜索
-    public Call<ResponseBody> getSoundData(Map<String,String> map, MultipartBody.Part file){
-        return getServer().getSoundData (map, file);
+    public Observable<GarbageBean> getSoundData(Map<String,String> map, MultipartBody.Part file){
+        return getServer().getSoundData(map, file);
     }
 }

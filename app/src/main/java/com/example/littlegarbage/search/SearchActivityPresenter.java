@@ -7,8 +7,8 @@ import android.os.Build;
 import android.os.Environment;
 
 import com.example.littlegarbage.model.bean.GarbageBean;
+import com.example.littlegarbage.retrofit.DataManager;
 import com.example.littlegarbage.retrofit.RetrofitHelper;
-import com.example.littlegarbage.utils.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -31,6 +34,9 @@ import static com.example.littlegarbage.utils.getMD5Util.getMD5;
 public class SearchActivityPresenter implements SearchActivityContract.Presenter {
 
     SearchActivityContract.View mView;
+
+    long time = System.currentTimeMillis();
+    String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -50,11 +56,11 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
     @Override
-    public void getHotSearchData(String hotHistoryURL,String hotHistoryKey) {
+    public void getHotSearchData(Context context,String hotHistoryURL,String hotHistoryKey) {
 
         //https://api.tianapi.com/txapi/hotlajifenlei/index?key=2fb9da721d164cdc0a45b990545796fa
         /*获取热门搜索数据*/
-        RetrofitHelper.getInstance(hotHistoryURL).getHotHistory(hotHistoryKey)
+        RetrofitHelper.getInstance(context,hotHistoryURL).getHotHistory(hotHistoryKey)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -75,10 +81,10 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
     @Override
-    public void getImageData(String imageNameURL, String appkey, String content) {
+    public void getImageData(Context context,String imageNameURL, String appkey, String content) {
 
         //获取联想词数据
-        RetrofitHelper.getInstance(imageNameURL).getImageData(appkey,content)
+        RetrofitHelper.getInstance(context,imageNameURL).getImageData(appkey,content)
                     .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -124,7 +130,6 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
             e.printStackTrace();
         }
 
-
         JSONObject jsonProperty = new JSONObject();
         try {
             jsonProperty.put("autoend",false);
@@ -134,13 +139,6 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        // 城市代码
-        final String[] garbageString = {null};
-
-        long time = System.currentTimeMillis();
-        String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
-
 
         Map<String, String> map = new HashMap<>();
         map.put("appkey", "f08733d22c104e5dc39f97a323359da9");
@@ -152,28 +150,14 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
         RequestBody requestFile = RequestBody.create(MediaType.parse("application/octet-stream"), sound);
         MultipartBody.Part file = MultipartBody.Part.createFormData("file", sound.getName(), requestFile);
 
-        RetrofitHelper.getInstance("https://aiapi.jd.com/jdai/").getSoundData(map,file)
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                        try {
-                            garbageString[0] = response.body().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        JsonParser jp = new JsonParser();
-                        GarbageBean garbageBean = jp.GarbageParse(garbageString[0]);
-                        if (garbageBean != null) {
-                            mView.getDataOnSucceed(garbageBean);
-
-                        } else {
-                            mView.getDataOnFailed();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+        Observable<GarbageBean> observable = new DataManager(context,"https://aiapi.jd.com/jdai/").getSoundData(map,file);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(garbageBean -> {
+                    if (garbageBean.getResult().message.equals("success")) {
+                        //获取数据成功
+                        mView.getDataOnSucceed(garbageBean);
+                    } else {
                         mView.getDataOnFailed();
                     }
                 });
@@ -181,60 +165,39 @@ public class SearchActivityPresenter implements SearchActivityContract.Presenter
     }
 
     @Override
-    public void getPictureData(String imgBase,String citydaima){
+    public void getPictureData(Context context,String imgBase,String citydaima){
+        /*根据图片获取具体信息*/
+        if (citydaima == null) {
+            citydaima = String.valueOf(310000);
+        }
 
-            /*根据图片获取具体信息*/
-            if (citydaima == null) {
-                citydaima = String.valueOf(310000);
-            }
+        JSONObject json = new JSONObject();
+        try {
+            json.put("cityId", citydaima);
+            json.put("imgBase64", imgBase);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-            JSONObject json = new JSONObject();
-            try {
-                json.put("cityId", citydaima);
-                json.put("imgBase64", imgBase);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        RequestBody body = RequestBody.create(JSON, String.valueOf(json));
 
-            // 城市代码
-            final String[] garbageString = {null};
+        Map<String, String> map = new HashMap<>();
+        map.put("appkey", "f08733d22c104e5dc39f97a323359da9");
+        map.put("timestamp", String.valueOf(time));
+        map.put("sign", s1);
 
-            long time = System.currentTimeMillis();
-            String s1 = getMD5("1a8c89772abf812630f6687255d22a3b" + time);
 
-            RequestBody body = RequestBody.create(JSON, String.valueOf(json));
-
-            Map<String, String> map = new HashMap<>();
-            map.put("appkey", "f08733d22c104e5dc39f97a323359da9");
-            map.put("timestamp", String.valueOf(time));
-            map.put("sign", s1);
-
-            RetrofitHelper.getInstance("https://aiapi.jd.com/jdai/").getPictureData(map, body)
-                    .enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                            try {
-                                garbageString[0] = response.body().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            JsonParser jp = new JsonParser();
-                            GarbageBean garbageBean = jp.GarbageParse(garbageString[0]);
-                            if (garbageBean != null) {
-                                mView.getDataOnSucceed(garbageBean);
-
-                            } else {
-                                mView.getDataOnFailed();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            mView.getDataOnFailed();
-                        }
-                    });
-
+        Observable<GarbageBean> observable = new DataManager(context,"https://aiapi.jd.com/jdai/").getPictureData(map,body);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(garbageBean -> {
+                    if (garbageBean.getResult().message.equals("success")) {
+                        //获取数据成功
+                        mView.getDataOnSucceed(garbageBean);
+                    } else {
+                        mView.getDataOnFailed();
+                    }
+                });
     }
 
 

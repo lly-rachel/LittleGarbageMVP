@@ -1,6 +1,10 @@
 package com.example.littlegarbage.retrofit;
 
+import com.example.littlegarbage.model.bean.GarbageBean;
+
 import java.util.Map;
+
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -30,17 +34,17 @@ public interface RetrofitService {
     //获取文本信息
     @Headers("Content-Type:application/json;charset=UTF-8")
     @POST("garbageTextSearch")
-    Call<ResponseBody> getTextData(@QueryMap Map<String,String> map, @Body RequestBody requestbody);
+    Observable<GarbageBean> getTextData(@QueryMap Map<String,String> map, @Body RequestBody requestbody);
 
     //图片
     @Headers("Content-Type:application/json;charset=UTF-8")
     @POST("garbageImageSearch")
-    Call<ResponseBody> getPictureData(@QueryMap Map<String,String> map, @Body RequestBody requestbody);
+    Observable<GarbageBean> getPictureData(@QueryMap Map<String,String> map, @Body RequestBody requestbody);
 
     //音频
     @Headers("Content-Type:application/json;charset=UTF-8")
     @POST("garbageVoiceSearch")
     @Multipart
-    Call<ResponseBody> getSoundData(@QueryMap Map<String,String> map, @Part MultipartBody.Part file);
+    Observable<GarbageBean> getSoundData(@QueryMap Map<String,String> map, @Part MultipartBody.Part file);
 
 }

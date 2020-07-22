@@ -152,7 +152,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
         initViews();
 
-        searchActivityPresenter.getHotSearchData(hotHistoryURL,hotHistoryKey);
+        searchActivityPresenter.getHotSearchData(this,hotHistoryURL,hotHistoryKey);
 
 
     }
@@ -423,7 +423,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
 
         imgBase = PictureUtil.bitmaptoString(bm);//获取图像的Base64编码
         showToastShort(this, "获取信息中...");
-        searchActivityPresenter.getPictureData(imgBase, citydaima);
+        searchActivityPresenter.getPictureData(this,imgBase, citydaima);
 
     }
 
@@ -571,7 +571,7 @@ public class SearchActivity extends AppCompatActivity implements SearchActivityC
                 try {
                     Imagename = URLEncoder.encode(name, "UTF-8");
 
-                   searchActivityPresenter.getImageData(imageNameURL,imageAppkey,Imagename);
+                   searchActivityPresenter.getImageData(SearchActivity.this,imageNameURL,imageAppkey,Imagename);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

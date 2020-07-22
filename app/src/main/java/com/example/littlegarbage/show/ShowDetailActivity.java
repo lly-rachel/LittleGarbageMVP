@@ -75,7 +75,7 @@ public class ShowDetailActivity extends AppCompatActivity implements ShowDetailA
         if (garbage != null) {
             hd = new Handler();
 
-            showDetailActivityPresenter.loadData(garbage,citydaima);
+            showDetailActivityPresenter.loadData(this,garbage,citydaima);
 
         } else if (garbageInfoBean != null) {
 

@@ -11,11 +11,11 @@ public interface SearchActivityContract {
         void clickshezhi();
         void clickSearch();
 
-        void getHotSearchData(String hotHistoryURL,String hotHistoryKey);
-        void getImageData(String imageNameURL,String appkey,String content);
+        void getHotSearchData(Context context,String hotHistoryURL,String hotHistoryKey);
+        void getImageData(Context context,String imageNameURL,String appkey,String content);
 //        void getImageData(String imageUrl);
         void getSoundData(Context context, String citydaima);
-        void getPictureData(String imgBase,String citydaima);
+        void getPictureData(Context context,String imgBase,String citydaima);
     }
 
     interface View{

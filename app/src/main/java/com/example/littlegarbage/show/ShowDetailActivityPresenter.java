@@ -1,22 +1,21 @@
 package com.example.littlegarbage.show;
 
+import android.content.Context;
+
 import com.example.littlegarbage.model.bean.GarbageBean;
 import com.example.littlegarbage.model.db.GarbageData;
 import com.example.littlegarbage.model.db.GarbageDataBase;
 import com.example.littlegarbage.model.db.GarbageDataDao;
-import com.example.littlegarbage.retrofit.RetrofitHelper;
-import com.example.littlegarbage.utils.JsonParser;
+import com.example.littlegarbage.retrofit.DataManager;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.example.littlegarbage.utils.getMD5Util.getMD5;
 
@@ -34,7 +33,7 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
     }
 
     @Override
-    public void loadData(String garbage,String citydaima) {
+    public void loadData(Context context,String garbage,String citydaima) {
         /*根据garbage获取具体信息*/
         if(citydaima==null){
             citydaima=String.valueOf(310000);
@@ -61,31 +60,15 @@ public class ShowDetailActivityPresenter implements ShowDetailActivityContract.P
         map.put("timestamp",String.valueOf(time));
         map.put("sign",s1);
 
-        RetrofitHelper.getInstance("https://aiapi.jd.com/jdai/").getTextData(map,body)
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                        try {
-                            garbageString[0] = response.body().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        JsonParser jp = new JsonParser();
-                        GarbageBean garbageBean = jp.GarbageParse(garbageString[0]);
-                        if (garbageBean != null) {
-                            //获取数据成功
-                            mView.getDataOnSucceed(garbageBean,garbage, garbageString[0]);
-
-                        } else {
-                            // 获取失败 也保存到数据库，确保历史记录也有这条非法输入，但点击时只显示空信息界面
-                            garbageString[0] = "数据获取错误";
-                            mView.getDataOnFailed(garbage, garbageString[0]);
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+        Observable<GarbageBean> observable = new DataManager(context,"https://aiapi.jd.com/jdai/").getTextData(map,body);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(garbageBean -> {
+                    if (garbageBean.getResult().message.equals("success")) {
+                        //获取数据成功
+                        mView.getDataOnSucceed(garbageBean,garbage, garbageString[0]);
+                    } else {
+                        // 获取失败 也保存到数据库，确保历史记录也有这条非法输入，但点击时只显示空信息界面
                         garbageString[0] = "数据获取错误";
                         mView.getDataOnFailed(garbage, garbageString[0]);
                     }
